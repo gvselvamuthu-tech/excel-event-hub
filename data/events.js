@@ -1,0 +1,282 @@
+window.EVENT_DATA = {
+  technical: [
+    {
+      id: "coding-challenge",
+      title: "Coding Challenge",
+      category: "Technical",
+      description: "Sample data: competitive programming challenge for students to demonstrate problem-solving and coding speed.",
+      shortDescription: "Sample data: a fast-paced coding competition for problem-solving and logic building.",
+      fullDescription: "Sample data: Coding Challenge is a technical event designed to test coding logic, speed, and accuracy. Participants solve programming problems under a time limit while showcasing analytical thinking and debugging confidence.",
+      date: "Sample: 12 Sep 2026",
+      time: "Sample: 09:30 AM",
+      venue: "Sample: Innovation Lab",
+      registrationFee: "₹150",
+      teamSize: "Individual",
+      maxParticipants: 80,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Use only campus-approved coding platforms.",
+        "Sample rule 2: Bring a valid college ID card.",
+        "Sample rule 3: Internet access is restricted during the challenge."
+      ],
+      prize: "Sample: ₹6,000 + Trophy",
+      prizes: ["₹6,000 + Trophy", "Certificate of Excellence"],
+      status: "Open"
+    },
+    {
+      id: "debugging-challenge",
+      title: "Debugging Challenge",
+      category: "Technical",
+      description: "Sample data: fix software bugs under time pressure and validate logic in a critical thinking sprint.",
+      shortDescription: "Sample data: identify issues quickly and fix code under strict time constraints.",
+      fullDescription: "Sample data: Debugging Challenge invites students to troubleshoot code, identify hidden errors, and produce working solutions within a competitive time frame. It highlights debugging discipline, precision, and analytical thinking.",
+      date: "Sample: 12 Sep 2026",
+      time: "Sample: 11:00 AM",
+      venue: "Sample: Computer Center",
+      registrationFee: "₹150",
+      teamSize: "Individual",
+      maxParticipants: 60,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Debug within the allotted time.",
+        "Sample rule 2: No external files or reference materials.",
+        "Sample rule 3: Clean and valid output is mandatory."
+      ],
+      prize: "Sample: ₹5,000 + Certificate",
+      prizes: ["₹5,000 + Certificate", "Best Debugger Award"],
+      status: "Open"
+    },
+    {
+      id: "paper-presentation",
+      title: "Paper Presentation",
+      category: "Technical",
+      description: "Sample data: present innovative ideas, research work, and technical concepts before faculty judges.",
+      shortDescription: "Sample data: present innovative ideas and technical research with strong communication skills.",
+      fullDescription: "Sample data: Paper Presentation is a scholarly platform where students present technical ideas, research concepts, and innovative engineering solutions. The event develops communication, confidence, and domain knowledge.",
+      date: "Sample: 13 Sep 2026",
+      time: "Sample: 10:00 AM",
+      venue: "Sample: Seminar Hall",
+      registrationFee: "₹200",
+      teamSize: "2 Members",
+      maxParticipants: 40,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Presentation time is 8 minutes plus 2 minutes Q&A.",
+        "Sample rule 2: Abstract must be submitted in advance.",
+        "Sample rule 3: Slides should be clear, professional, and plagiarism-free."
+      ],
+      prize: "Sample: ₹8,000 + Trophy",
+      prizes: ["₹8,000 + Trophy", "Best Presenter Award"],
+      status: "Open"
+    },
+    {
+      id: "project-expo",
+      title: "Project Expo",
+      category: "Technical",
+      description: "Sample data: showcase practical engineering projects and demonstrate real-world applications.",
+      shortDescription: "Sample data: present real-world engineering prototypes and project ideas to judges and peers.",
+      fullDescription: "Sample data: Project Expo gives students an opportunity to showcase practical engineering developments, innovation prototypes, and problem-solving models. It encourages collaborative work, creativity, and technical demonstration.",
+      date: "Sample: 13 Sep 2026",
+      time: "Sample: 01:00 PM",
+      venue: "Sample: Main Auditorium",
+      registrationFee: "₹250",
+      teamSize: "2-4 Members",
+      maxParticipants: 50,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Project demos must be functional.",
+        "Sample rule 2: Teams must provide a brief project summary.",
+        "Sample rule 3: Demo setup must be completed before the event starts."
+      ],
+      prize: "Sample: ₹10,000 + Internship Support",
+      prizes: ["₹10,000 + Internship Support", "Best Innovation Award"],
+      status: "Open"
+    },
+    {
+      id: "web-designing",
+      title: "Web Designing",
+      category: "Technical",
+      description: "Sample data: build creative, responsive interfaces with a strong user experience focus.",
+      shortDescription: "Sample data: design responsive user interfaces with creativity and usability in mind.",
+      fullDescription: "Sample data: Web Designing challenges students to create visually engaging and responsive web interfaces using modern design principles and front-end creativity. It emphasizes user experience, layout balance, and functional aesthetics.",
+      date: "Sample: 14 Sep 2026",
+      time: "Sample: 09:30 AM",
+      venue: "Sample: Design Studio",
+      registrationFee: "₹150",
+      teamSize: "2 Members",
+      maxParticipants: 60,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Use approved design tools and technologies.",
+        "Sample rule 2: Submit final design before the deadline.",
+        "Sample rule 3: The design should be responsive and accessible."
+      ],
+      prize: "Sample: ₹7,000 + Certificate",
+      prizes: ["₹7,000 + Certificate", "Best UI Design Award"],
+      status: "Open"
+    },
+    {
+      id: "technical-quiz",
+      title: "Technical Quiz",
+      category: "Technical",
+      description: "Sample data: challenge knowledge across core engineering subjects and current technology trends.",
+      shortDescription: "Sample data: test your engineering knowledge through focused technical rounds and rapid-fire questions.",
+      fullDescription: "Sample data: Technical Quiz provides a platform for students to test general engineering knowledge, current technology developments, and subject fundamentals through dynamic rounds and quick thinking challenges.",
+      date: "Sample: 14 Sep 2026",
+      time: "Sample: 02:00 PM",
+      venue: "Sample: Smart Classroom",
+      registrationFee: "₹100",
+      teamSize: "2 Members",
+      maxParticipants: 80,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Teams must register before the start time.",
+        "Sample rule 2: Use of mobile phones is prohibited during rounds.",
+        "Sample rule 3: Tie-breakers will be resolved by the jury."
+      ],
+      prize: "Sample: ₹6,000 + Trophy",
+      prizes: ["₹6,000 + Trophy", "Best Quiz Team Award"],
+      status: "Open"
+    }
+  ],
+  nonTechnical: [
+    {
+      id: "general-quiz",
+      title: "General Quiz",
+      category: "Non-Technical",
+      description: "Sample data: a fun general quiz experience with rounds involving campus facts and pop culture.",
+      shortDescription: "Sample data: enjoy a general knowledge challenge with fun rounds and campus energy.",
+      fullDescription: "Sample data: General Quiz brings together students for a lively, entertaining round of questions spanning campus life, pop culture, current affairs, and general knowledge. It is designed for teamwork and fun participation.",
+      date: "Sample: 15 Sep 2026",
+      time: "Sample: 10:00 AM",
+      venue: "Sample: Auditorium",
+      registrationFee: "₹100",
+      teamSize: "2 Members",
+      maxParticipants: 90,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Teams must be present before the event starts.",
+        "Sample rule 2: Final rankings are based on combined score.",
+        "Sample rule 3: Audience participation is allowed only during approved rounds."
+      ],
+      prize: "Sample: ₹4,000 + Trophy",
+      prizes: ["₹4,000 + Trophy", "Quiz Excellence Certificate"],
+      status: "Open"
+    },
+    {
+      id: "photography",
+      title: "Photography",
+      category: "Non-Technical",
+      description: "Sample data: capture moments, colors, emotion, and creativity through a photo contest.",
+      shortDescription: "Sample data: capture compelling frames and express creativity through photography.",
+      fullDescription: "Sample data: Photography event invites students to capture moments, textures, and emotions through powerful imagery. It encourages creativity, visual storytelling, and artistic composition in a campus setting.",
+      date: "Sample: 15 Sep 2026",
+      time: "Sample: 11:30 AM",
+      venue: "Sample: Campus Grounds",
+      registrationFee: "₹120",
+      teamSize: "Individual",
+      maxParticipants: 70,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Photos should be original and unedited.",
+        "Sample rule 2: Theme details will be announced on the day.",
+        "Sample rule 3: Entries must be submitted before the deadline."
+      ],
+      prize: "Sample: ₹5,000 + Certificate",
+      prizes: ["₹5,000 + Certificate", "Best Photographer Award"],
+      status: "Open"
+    },
+    {
+      id: "treasure-hunt",
+      title: "Treasure Hunt",
+      category: "Non-Technical",
+      description: "Sample data: explore clues, work in teams, and complete the campus adventure challenge.",
+      shortDescription: "Sample data: solve clues, explore the campus, and complete the adventure challenge as a team.",
+      fullDescription: "Sample data: Treasure Hunt combines strategy, teamwork, and campus exploration. Participants solve clues, navigate checkpoints, and race to complete the route with creativity and speed.",
+      date: "Sample: 16 Sep 2026",
+      time: "Sample: 08:30 AM",
+      venue: "Sample: Campus Outdoor Zone",
+      registrationFee: "₹150",
+      teamSize: "4 Members",
+      maxParticipants: 60,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Teams must follow the route map provided.",
+        "Sample rule 2: No skipping checkpoints.",
+        "Sample rule 3: Safety instructions must be followed at all times."
+      ],
+      prize: "Sample: ₹7,000 + Trophy",
+      prizes: ["₹7,000 + Trophy", "Fastest Team Award"],
+      status: "Open"
+    },
+    {
+      id: "dance",
+      title: "Dance",
+      category: "Non-Technical",
+      description: "Sample data: bring rhythm, energy, and stage presence to a dynamic dance competition.",
+      shortDescription: "Sample data: showcase rhythm, expression, and stage presence in a vibrant dance contest.",
+      fullDescription: "Sample data: Dance event celebrates movement, expression, and performance energy. It provides a vibrant stage for students to present creative choreography and stage confidence in front of a college audience.",
+      date: "Sample: 16 Sep 2026",
+      time: "Sample: 02:30 PM",
+      venue: "Sample: Main Stage",
+      registrationFee: "₹200",
+      teamSize: "4-8 Members",
+      maxParticipants: 50,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Track selection must be submitted in advance.",
+        "Sample rule 2: No offensive or unsafe acts.",
+        "Sample rule 3: Sound and lighting cues must be followed during performance."
+      ],
+      prize: "Sample: ₹9,000 + Trophy",
+      prizes: ["₹9,000 + Trophy", "Best Choreography Award"],
+      status: "Open"
+    },
+    {
+      id: "music",
+      title: "Music",
+      category: "Non-Technical",
+      description: "Sample data: showcase vocal and instrumental talent with an expressive college stage performance.",
+      shortDescription: "Sample data: perform vocal or instrumental music with expression and stage confidence.",
+      fullDescription: "Sample data: Music event invites students to express their musical talent through vocals or instruments. It celebrates performance ability, rhythm, and the vibrant culture of the college stage.",
+      date: "Sample: 17 Sep 2026",
+      time: "Sample: 12:00 PM",
+      venue: "Sample: Cultural Stage",
+      registrationFee: "₹150",
+      teamSize: "2-5 Members",
+      maxParticipants: 45,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Participants should bring their own instruments if required.",
+        "Sample rule 2: Music duration will be announced by the coordinator.",
+        "Sample rule 3: Language and track content should remain audience-appropriate."
+      ],
+      prize: "Sample: ₹8,000 + Trophy",
+      prizes: ["₹8,000 + Trophy", "Best Vocal Performance Award"],
+      status: "Open"
+    },
+    {
+      id: "short-film",
+      title: "Short Film",
+      category: "Non-Technical",
+      description: "Sample data: tell a creative visual story through short-form video and cinematic expression.",
+      shortDescription: "Sample data: create a short film and present a compelling story through visual media.",
+      fullDescription: "Sample data: Short Film competition encourages students to create compact, artistic movies with storytelling, camera work, and creativity. It celebrates cinematic expression and collaborative filmmaking.",
+      date: "Sample: 17 Sep 2026",
+      time: "Sample: 03:30 PM",
+      venue: "Sample: Media Studio",
+      registrationFee: "₹200",
+      teamSize: "3-6 Members",
+      maxParticipants: 35,
+      image: "assets/images/event-placeholder.svg",
+      rules: [
+        "Sample rule 1: Film length and submission format will be announced during registration.",
+        "Sample rule 2: Content must be suitable for a college audience.",
+        "Sample rule 3: Final submission must be completed before the deadline."
+      ],
+      prize: "Sample: ₹10,000 + Certificate",
+      prizes: ["₹10,000 + Certificate", "Best Short Film Award"],
+      status: "Open"
+    }
+  ]
+};

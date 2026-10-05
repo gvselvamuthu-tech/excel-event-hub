@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>Student Registration | Excel Event Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container navbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <p class="brand-text" data-college-name>Excel Engineering College</p>
+            <p class="brand-subtext">Event Hub</p>
+          </div>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="../index.html">Home</a>
+          <a href="events.html">Events</a>
+          <a href="register.html">Register</a>
+          <a href="about.html">About</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="admin-login.html" class="utility-link">Admin Login</a>
+          <a href="payment.html" class="btn btn--primary nav-qr-link">Scan QR</a>
+          <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero page-hero--register">
+        <div class="container page-header">
+          <span class="tag">Registration</span>
+          <h1>Register for the Event</h1>
+        </div>
+      </section>
+
+      <section class="section section--soft register-section">
+        <div class="container registration-layout">
+          <aside class="event-summary-card" aria-live="polite">
+            <div class="event-summary-card__media">
+              <img id="reg-event-image" src="../assets/images/event-placeholder.svg" alt="Selected event" class="event-summary-card__image" />
+            </div>
+            <div class="event-summary-card__content">
+              <p class="event-summary-card__label">Selected Event</p>
+              <h2 id="reg-event-name">Loading event...</h2>
+              <div class="event-summary-card__meta">
+                <span id="reg-event-category" class="pill">Technical Event</span>
+                <span id="reg-event-fee" class="fee-pill">₹0</span>
+              </div>
+              <ul class="info-list compact-list">
+                <li><strong>Date:</strong> <span id="reg-event-date">-</span></li>
+                <li><strong>Time:</strong> <span id="reg-event-time">-</span></li>
+                <li><strong>Venue:</strong> <span id="reg-event-venue">-</span></li>
+              </ul>
+              <div id="reg-event-qr-wrap" class="event-qr-card" hidden>
+                <p class="event-qr-card__title">Event QR Code</p>
+                <img id="reg-event-qr" class="event-qr-card__image" alt="QR code for the selected event" />
+              </div>
+            </div>
+          </aside>
+
+          <div class="form-card registration-form-card">
+            <h3 class="form-card__title">Registration Form</h3>
+            <form id="registration-form" novalidate>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="full-name">Full Name *</label>
+                  <input id="full-name" name="fullName" type="text" placeholder="Enter your full name" />
+                  <div class="error-message" data-error-for="fullName"></div>
+                </div>
+                <div class="form-field">
+                  <label for="register-number">Register Number *</label>
+                  <input id="register-number" name="registerNumber" type="text" placeholder="Enter register number" />
+                  <div class="error-message" data-error-for="registerNumber"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="college-name">College Name *</label>
+                  <input id="college-name" name="collegeName" type="text" value="Excel Engineering College" />
+                  <div class="error-message" data-error-for="collegeName"></div>
+                </div>
+                <div class="form-field">
+                  <label for="department">Department *</label>
+                  <input id="department" name="department" type="text" placeholder="Enter department" />
+                  <div class="error-message" data-error-for="department"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="year">Year *</label>
+                  <select id="year" name="year">
+                    <option value="">Select year</option>
+                    <option value="1st Year">1st Year</option>
+                    <option value="2nd Year">2nd Year</option>
+                    <option value="3rd Year">3rd Year</option>
+                    <option value="4th Year">4th Year</option>
+                  </select>
+                  <div class="error-message" data-error-for="year"></div>
+                </div>
+                <div class="form-field">
+                  <label for="email">Email Address *</label>
+                  <input id="email" name="email" type="email" placeholder="Enter your email" />
+                  <div class="error-message" data-error-for="email"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="mobile">Mobile Number *</label>
+                  <input id="mobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit mobile number" />
+                  <div class="error-message" data-error-for="mobile"></div>
+                </div>
+                <div class="form-field">
+                  <label for="gender">Gender</label>
+                  <select id="gender" name="gender">
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="event-name">Event Name</label>
+                  <input id="event-name" name="eventName" type="text" readonly />
+                </div>
+                <div class="form-field">
+                  <label>Participation Type</label>
+                  <div class="choice-group" role="radiogroup" aria-label="Participation type">
+                    <label class="choice-option">
+                      <input type="radio" name="participationType" value="Individual" checked />
+                      <span>Individual</span>
+                    </label>
+                    <label class="choice-option">
+                      <input type="radio" name="participationType" value="Team" />
+                      <span>Team</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div id="team-fields" class="team-fields is-hidden">
+                <div class="form-row">
+                  <div class="form-field">
+                    <label for="team-name">Team Name</label>
+                    <input id="team-name" name="teamName" type="text" placeholder="Enter team name" />
+                  </div>
+                  <div class="form-field">
+                    <label for="team-size">Team Size</label>
+                    <input id="team-size" name="teamSize" type="text" readonly />
+                  </div>
+                </div>
+
+                <div id="team-members"></div>
+              </div>
+
+              <div class="form-field checkbox-field">
+                <label class="checkbox-inline" for="terms">
+                  <input id="terms" name="terms" type="checkbox" />
+                  <span>I confirm that the information provided is correct and accurate.</span>
+                </label>
+                <div class="error-message" data-error-for="terms"></div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary">Submit Registration</button>
+              </div>
+            </form>
+
+            <div id="registration-message" class="message-box" hidden></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>© 2026 Excel Event Hub</p>
+        <p data-college-location>Komarapalayam, Namakkal, Tamil Nadu, India</p>
+      </div>
+    </footer>
+
+    <script src="../data/college.js"></script>
+    <script src="../data/events.js"></script>
+    <script src="../js/event-image.js?v=event-qr-status"></script>
+    <script src="../js/payment-config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/mouse-trail.js"></script>
+    <script src="../js/registration.js?v=event-qr-status"></script>
+  </body>
+</html>

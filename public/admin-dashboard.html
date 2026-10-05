@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>Admin Dashboard | Excel Event Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/admin-dashboard.css" />
+    <script>
+      // Protect route early to avoid flashing content
+      (function(){
+        try{
+          const logged = sessionStorage.getItem('excel_admin_logged_in');
+          if (logged !== '1') {
+            window.location.href = 'admin-login.html';
+          }
+        }catch(e){
+          window.location.href = 'admin-login.html';
+        }
+      })();
+    </script>
+  </head>
+  <body class="admin-dashboard">
+    <header class="site-header">
+      <div class="container navbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <p class="brand-text" data-college-name>Excel Engineering College</p>
+            <p class="brand-subtext">Event Hub — Admin</p>
+          </div>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="../index.html">Home</a>
+          <a href="events.html">Events</a>
+          <a href="admin-login.html" aria-current="page">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container page-header">
+          <span class="tag">Admin Dashboard</span>
+          <h1>Control panel</h1>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="dashboard-grid">
+            <div>
+              <div class="stat-cards" id="overview-stats">
+                <div class="stat-card">
+                  <strong id="stat-events">0</strong>
+                  <div class="small">Total Events</div>
+                </div>
+                <div class="stat-card">
+                  <strong id="stat-registrations">0</strong>
+                  <div class="small">Total Registrations</div>
+                </div>
+                <div class="stat-card">
+                  <strong id="stat-payments">0</strong>
+                  <div class="small">Total Payments</div>
+                </div>
+                <div class="stat-card">
+                  <strong id="stat-today">0</strong>
+                  <div class="small">Today's Registrations</div>
+                </div>
+              </div>
+
+              <div class="dashboard-section">
+                <div class="section-heading">
+                  <h2>Event Management</h2>
+                  <div class="controls">
+                    <button id="add-event-btn" class="btn btn--primary">Add Event</button>
+                  </div>
+                </div>
+
+                <div class="form-card list-scroll">
+                  <table class="table" id="events-table" aria-describedby="events-list">
+                    <thead>
+                      <tr><th>Title</th><th>Category</th><th>Fee</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="dashboard-section">
+                <div class="section-heading">
+                  <h2>Registration Management</h2>
+                  <div class="controls" style="flex-wrap: wrap;">
+                    <input id="reg-search" placeholder="Search name, reference, email, phone, txn" class="form-field" style="width:220px;" />
+                    <select id="reg-filter-event" class="form-field"><option value="all">All events</option></select>
+                    <select id="reg-filter-payment" class="form-field">
+                      <option value="all">All payment statuses</option>
+                      <option value="submitted">Submitted</option>
+                      <option value="paid">Paid</option>
+                      <option value="pending">Pending</option>
+                    </select>
+                    <button id="refresh-workbook-data" class="btn btn--secondary">Refresh</button>
+                  </div>
+                </div>
+
+                <div id="admin-dashboard-error" class="message-box error-box" role="alert" aria-live="assertive" style="display:none; margin-bottom: 1rem;"></div>
+
+                <div class="form-card list-scroll">
+                  <table class="table" id="registrations-table">
+                    <thead>
+                      <tr>
+                        <th>Reference ID</th>
+                        <th>Event Name</th>
+                        <th>Participant Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Amount</th>
+                        <th>Transaction ID</th>
+                        <th>Registration Date</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="dashboard-section">
+                <div class="section-heading"><h2>Payment Management</h2></div>
+                <div class="form-card list-scroll">
+                  <table class="table" id="payments-table">
+                    <thead><tr><th>Reference</th><th>Participant</th><th>Event</th><th>Amount</th><th>Txn ID</th><th>Status</th></tr></thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <aside class="admin-panel">
+              <div class="form-card">
+                <h3>Admin Controls</h3>
+                <div style="margin-top:0.8rem;">
+                  <button id="admin-logout" class="btn btn--ghost">Logout</button>
+                </div>
+              </div>
+
+              <div class="form-card">
+                <h3>Quick Actions</h3>
+                <div style="display:grid;gap:0.6rem;margin-top:0.6rem;">
+                  <button id="refresh-data" class="btn btn--secondary">Refresh Data</button>
+                  <button id="export-data" class="btn btn--ghost">Export Local Data</button>
+                </div>
+              </div>
+
+              <div class="form-card">
+                <h3>Recent Registrations</h3>
+                <ul id="recent-registrations-list" style="list-style:none; padding:0; margin:0.75rem 0 0; display:grid; gap:0.6rem;"></ul>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- Edit/Add modal (simple) -->
+      <div id="event-modal" class="event-modal" style="display:none;">
+        <div class="event-modal__dialog">
+          <div class="form-card event-modal__content">
+            <h3 id="modal-title">Add Event</h3>
+            <form id="event-form">
+              <div class="form-row">
+                <div class="form-field"><label>Title</label><input name="title" required></div>
+                <div class="form-field"><label>Id (slug)</label><input name="id" required></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Category</label><select name="category"><option value="Technical">Technical</option><option value="Non-Technical">Non-Technical</option></select></div>
+                <div class="form-field"><label>Event Registration Status</label><select name="status"><option value="Open">OPEN</option><option value="Closed">CLOSED</option></select></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Date</label><input name="date" type="text" placeholder="12 Sep 2026"></div>
+                <div class="form-field"><label>Time</label><input name="time" type="text" placeholder="09:30 AM"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Venue</label><input name="venue" type="text" placeholder="Innovation Lab"></div>
+                <div class="form-field"><label>Registration Fee</label><input name="registrationFee" type="text" placeholder="₹150"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Registration Deadline</label><input name="registrationDeadline" type="text" placeholder="10 Sep 2026"></div>
+                <div class="form-field"><label>Image Path</label><input name="image" type="text" placeholder="assets/images/event-placeholder.svg"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Event QR Code Path / URL</label><input name="qrCode" type="text" placeholder="assets/images/event-qr.png"></div>
+                <div class="form-field"><label for="event-qr-upload">Upload Event QR Code</label><input id="event-qr-upload" name="qrImageUpload" type="file" accept="image/png,image/jpeg,image/webp"><small class="small">PNG, JPEG, or WebP; maximum 5 MB.</small></div>
+              </div>
+              <div class="form-field checkbox-field">
+                <label class="checkbox-inline" for="scanner-enabled">
+                  <input id="scanner-enabled" name="scannerEnabled" type="checkbox">
+                  <span>Enable camera QR scanner for this event</span>
+                </label>
+              </div>
+              <div class="form-row">
+                <div class="form-field"><label>Team Size</label><input name="teamSize" type="text" placeholder="Individual or 2 Members"></div>
+                <div class="form-field"><label>Max Participants</label><input name="maxParticipants" type="number" min="1" step="1"></div>
+              </div>
+              <div class="form-field"><label>Short Description</label><input name="shortDescription"></div>
+              <div class="form-field"><label>Description</label><textarea name="description" rows="3"></textarea></div>
+              <div class="form-field"><label>Full Description</label><textarea name="fullDescription" rows="3"></textarea></div>
+              <div class="form-field"><label>Organizer Details</label><input name="organizer" type="text" placeholder="Event coordinator / club name"></div>
+              <div class="form-field"><label>Rules (one per line)</label><textarea name="rules" rows="3" placeholder="Rule 1&#10;Rule 2"></textarea></div>
+              <div class="form-field"><label>Prize List (one per line)</label><textarea name="prizes" rows="3" placeholder="₹5,000 + Trophy&#10;Certificate of Excellence"></textarea></div>
+              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;"><button type="submit" class="btn btn--primary">Save</button><button type="button" id="cancel-modal" class="btn btn--ghost">Cancel</button></div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Toast notification for admin actions -->
+    <div id="admin-toast" role="status" aria-live="polite" class="toast"></div>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <div>
+          <p class="brand-text" data-college-name>Excel Engineering College</p>
+          <p data-college-location>Komarapalayam, Namakkal, Tamil Nadu, India</p>
+        </div>
+        <p>© 2026 Excel Event Hub</p>
+      </div>
+    </footer>
+
+    <script src="../data/college.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/mouse-trail.js"></script>
+    <script src="../js/admin-dashboard.js?v=event-qr-status"></script>
+  </body>
+</html>

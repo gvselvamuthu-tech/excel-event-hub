@@ -1,0 +1,25 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="url(#paint0_linear_1_2)"/>
+  <path d="M180 760H1420V820H180V760Z" fill="#F8FAFC" fill-opacity="0.18"/>
+  <path d="M260 720H1340V760H260V720Z" fill="#F8FAFC" fill-opacity="0.22"/>
+  <rect x="300" y="250" width="1000" height="430" rx="26" fill="#E2E8F0" fill-opacity="0.8"/>
+  <rect x="360" y="310" width="880" height="300" rx="18" fill="#F8FAFC" fill-opacity="0.9"/>
+  <rect x="430" y="350" width="190" height="220" rx="10" fill="#CBD5E1"/>
+  <rect x="655" y="350" width="520" height="26" rx="13" fill="#94A3B8"/>
+  <rect x="655" y="398" width="445" height="22" rx="11" fill="#C0D4E1"/>
+  <rect x="655" y="440" width="380" height="22" rx="11" fill="#C0D4E1"/>
+  <rect x="655" y="482" width="410" height="22" rx="11" fill="#C0D4E1"/>
+  <rect x="655" y="524" width="245" height="22" rx="11" fill="#C0D4E1"/>
+  <path d="M200 820L410 610L610 780L795 690L860 730L1110 540L1400 820H200Z" fill="#DDE7F3" fill-opacity="0.8"/>
+  <rect x="1220" y="450" width="80" height="140" rx="18" fill="#F59E0B" fill-opacity="0.75"/>
+  <path d="M1260 420V300H1320V420H1260Z" fill="#F8FAFC" fill-opacity="0.9"/>
+  <circle cx="1260" cy="270" r="50" fill="#F8FAFC" fill-opacity="0.9"/>
+  <text x="800" y="890" text-anchor="middle" fill="#F8FAFC" font-family="Arial, sans-serif" font-size="64" font-weight="700">College Building Photo Placeholder</text>
+  <defs>
+    <linearGradient id="paint0_linear_1_2" x1="154" y1="100" x2="1550" y2="930" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="0.45" stop-color="#1E3A8A"/>
+      <stop offset="1" stop-color="#0F766E"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>Explore Events | Excel Event Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container navbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <p class="brand-text" data-college-name>Excel Engineering College</p>
+            <p class="brand-subtext">Event Hub</p>
+          </div>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="../index.html">Home</a>
+          <a href="events.html">Events</a>
+          <a href="register.html">Register</a>
+          <a href="about.html">About</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="admin-login.html" class="utility-link">Admin Login</a>
+          <a href="payment.html" class="btn btn--primary nav-qr-link">Scan QR</a>
+          <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero page-hero--events">
+        <div class="container page-header">
+          <span class="tag">Excel Event Hub / 2026</span>
+          <h1>EXPLORE<br /><span>WHAT'S NEXT</span></h1>
+          <p class="page-subtitle">Explore <i>•</i> Participate <i>•</i> Grow</p>
+          <a href="#events-grid" class="btn btn--primary hero-cta">Explore Events <span aria-hidden="true">↘</span></a>
+        </div>
+      </section>
+
+      <section class="section section--soft">
+        <div class="container">
+          <div class="events-toolbar">
+            <div class="events-toolbar__intro">
+              <span class="section-kicker">The event index</span>
+              <h2>Find your arena.</h2>
+              <p>Discover the moments that move campus forward.</p>
+            </div>
+            <label class="search-box" aria-label="Search events">
+              <span aria-hidden="true">⌕</span>
+              <input id="event-search" type="search" placeholder="Search events..." />
+            </label>
+
+            <div class="filter-group" aria-label="Category filters">
+              <button class="filter-btn is-active" type="button" data-category-filter="all">ALL</button>
+              <button class="filter-btn" type="button" data-category-filter="technical">💻 TECHNICAL</button>
+              <button class="filter-btn" type="button" data-category-filter="nontechnical">🎨 NON-TECHNICAL</button>
+            </div>
+
+            <div class="filter-group filter-group--status" aria-label="Status filters">
+              <button class="filter-btn is-active" type="button" data-status-filter="all">ALL</button>
+              <button class="filter-btn" type="button" data-status-filter="open">OPEN</button>
+              <button class="filter-btn" type="button" data-status-filter="closed">CLOSED</button>
+            </div>
+          </div>
+
+          <div id="events-grid" class="cards-grid events-grid"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>© 2026 Excel Event Hub</p>
+        <p data-college-location>Komarapalayam, Namakkal, Tamil Nadu, India</p>
+      </div>
+    </footer>
+
+    <script src="../data/college.js"></script>
+    <script src="../data/events.js"></script>
+    <script src="../js/event-image.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/events.js?v=event-qr-status"></script>
+    <script src="../js/mouse-trail.js"></script>
+  </body>
+</html>

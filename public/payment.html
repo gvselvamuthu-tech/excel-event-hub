@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>Payment | Excel Event Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container navbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <p class="brand-text" data-college-name>Excel Engineering College</p>
+            <p class="brand-subtext">Event Hub</p>
+          </div>
+        </div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="../index.html">Home</a>
+          <a href="events.html">Events</a>
+          <a href="register.html">Register</a>
+          <a href="payment.html">Payment</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="admin-login.html" class="utility-link">Admin Login</a>
+          <a href="payment.html" class="btn btn--primary nav-qr-link">Scan QR</a>
+          <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero page-hero--payment">
+        <div class="container page-header">
+          <span class="tag">Payment</span>
+          <h1>Complete your registration</h1>
+        </div>
+      </section>
+
+      <section class="section section--soft payment-section">
+        <div class="container payment-layout">
+          <aside class="event-summary-card" aria-live="polite">
+            <div class="event-summary-card__media">
+              <img id="payment-event-image" src="../assets/images/event-placeholder.svg" alt="Selected event" class="event-summary-card__image" />
+            </div>
+            <div class="event-summary-card__content">
+              <p class="event-summary-card__label">Event Payment</p>
+              <h2 id="payment-event-name">Loading payment details...</h2>
+              <div class="event-summary-card__meta">
+                <span class="pill">Registration Fee</span>
+                <span id="payment-event-fee" class="fee-pill">₹0</span>
+              </div>
+              <ul class="info-list compact-list">
+                <li><strong>Date:</strong> <span id="payment-event-date">-</span></li>
+                <li><strong>Time:</strong> <span id="payment-event-time">-</span></li>
+                <li><strong>Venue:</strong> <span id="payment-event-venue">-</span></li>
+                <li><strong>Student:</strong> <span id="payment-student-name">-</span></li>
+                <li><strong>Register Number:</strong> <span id="payment-student-id">-</span></li>
+              </ul>
+            </div>
+          </aside>
+
+          <div class="form-card payment-form-card">
+            <div id="payment-form-wrapper">
+              <div class="payment-qr-wrap">
+                <div class="payment-qr-code-panel">
+                  <div class="qr-box">
+                    <div id="upi-qr-code" class="qr-code" aria-label="UPI QR code"></div>
+                  </div>
+                  <button id="qr-scan-trigger" class="btn btn--secondary" type="button">Scan QR Code</button>
+                </div>
+                <div class="upi-details">
+                  <p class="upi-label">UPI ID</p>
+                  <input id="upi-id" type="text" value="Loading..." readonly />
+                  <p class="upi-label">Amount</p>
+                  <input id="amount" type="text" value="₹0" readonly />
+                  <a id="upi-pay-link" class="btn btn--primary" href="#" target="_blank" rel="noreferrer">Pay via UPI App</a>
+                </div>
+              </div>
+
+              <div class="payment-summary-card" id="payment-summary">
+                <p class="upi-label">Payment Summary</p>
+                <ul class="info-list compact-list">
+                  <li><strong>Event:</strong> <span id="summary-event-name">-</span></li>
+                  <li><strong>Participant:</strong> <span id="summary-participant-name">-</span></li>
+                  <li><strong>Amount:</strong> <span id="summary-amount">-</span></li>
+                  <li><strong>Status:</strong> <span id="summary-status">Pending</span></li>
+                </ul>
+              </div>
+
+              <form id="payment-form" novalidate>
+                <div class="form-field">
+                  <label for="utr-number">UTR / Transaction ID *</label>
+                  <input id="utr-number" name="utrNumber" type="text" placeholder="Enter UTR or transaction reference" />
+                </div>
+
+                <div class="form-actions">
+                  <button id="complete-payment-btn" type="button" class="btn btn--primary">I Have Completed Payment</button>
+                  <a href="events.html" class="btn btn--secondary btn--ghost">Return to Events</a>
+                </div>
+              </form>
+
+              <div id="payment-message" class="message-box" hidden></div>
+            </div>
+
+            <div id="payment-confirmation" class="form-card confirmation-card" hidden>
+              <span class="tag">Payment Submitted</span>
+              <h3>Payment Submitted Successfully</h3>
+              <p>Your registration is now ready for review with the details below.</p>
+              <ul class="info-list compact-list">
+                <li><strong>Event Name:</strong> <span id="confirmation-event-name">-</span></li>
+                <li><strong>Participant Name:</strong> <span id="confirmation-participant-name">-</span></li>
+                <li><strong>Reference ID:</strong> <span id="confirmation-reference-id">-</span></li>
+                <li><strong>Amount:</strong> <span id="confirmation-amount">-</span></li>
+                <li><strong>Payment Status:</strong> <span id="confirmation-status">Submitted</span></li>
+              </ul>
+              <div class="form-actions">
+                <a href="events.html" class="btn btn--primary">Return to Events</a>
+              </div>
+            </div>
+
+            <div class="payment-notes">
+              <h3>UPI Payment Instructions</h3>
+              <ol>
+                <li>Open the UPI app and scan the QR code above or use the direct pay link.</li>
+                <li>Confirm the amount and pay the registration fee for the selected event.</li>
+                <li>Enter the UTR or transaction ID in the field above and click “I Have Completed Payment”.</li>
+                <li>Your payment will be marked as submitted and will be reviewed by the event team.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>© 2026 Excel Event Hub</p>
+        <p data-college-location>Komarapalayam, Namakkal, Tamil Nadu, India</p>
+      </div>
+    </footer>
+
+    <div id="qr-scanner-modal" class="qr-scanner-modal" hidden aria-hidden="true">
+      <div class="qr-scanner-backdrop" data-close-qr-scanner></div>
+      <div class="qr-scanner-dialog" role="dialog" aria-modal="true" aria-labelledby="qr-scanner-title">
+        <div class="qr-scanner-header">
+          <div>
+            <p class="qr-scanner-kicker">Payment Check</p>
+            <h3 id="qr-scanner-title">Scan QR Code</h3>
+          </div>
+          <button id="close-qr-scanner" class="qr-scanner-close" type="button" aria-label="Close QR scanner">Close</button>
+        </div>
+        <div class="qr-scanner-stage">
+          <video id="qr-video" class="qr-scanner-video" autoplay playsinline muted></video>
+          <div class="qr-scanner-frame" aria-hidden="true"></div>
+        </div>
+        <p id="qr-scanner-status" class="qr-scanner-status">Allow camera access to scan a QR code.</p>
+      </div>
+    </div>
+
+    <script src="../data/college.js"></script>
+    <script src="../data/events.js"></script>
+    <script src="../js/event-image.js?v=event-qr-status"></script>
+    <script src="../js/payment-config.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/mouse-trail.js"></script>
+    <script src="../js/payment.js?v=event-qr-status"></script>
+  </body>
+</html>

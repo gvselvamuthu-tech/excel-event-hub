@@ -1,0 +1,17 @@
+{
+  "name": "excel-event-hub",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "migrate:events": "node scripts/migrate-events-to-mongodb.js"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.5",
+    "exceljs": "^4.4.0",
+    "mongoose": "^9.10.4"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

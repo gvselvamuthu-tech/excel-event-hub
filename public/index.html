@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <meta name="description" content="Excel Engineering College event registration portal with technical and non-technical events." />
+    <title>Excel Event Hub | Excel Engineering College</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/preloader.css" />
+  </head>
+  <body>
+    <div class="event-preloader" data-event-preloader role="status" aria-live="polite" aria-label="Loading Excel Event Hub">
+      <div class="event-preloader__scene">
+        <div class="event-preloader__particles" aria-hidden="true">
+          <span class="event-preloader__particle"></span>
+          <span class="event-preloader__particle"></span>
+          <span class="event-preloader__particle"></span>
+          <span class="event-preloader__particle"></span>
+          <span class="event-preloader__particle"></span>
+          <span class="event-preloader__particle"></span>
+        </div>
+        <span class="event-preloader__ring" aria-hidden="true"></span>
+        <span class="event-preloader__ring event-preloader__ring--inner" aria-hidden="true"></span>
+        <span class="event-preloader__arc" aria-hidden="true"></span>
+        <span class="event-preloader__arc event-preloader__arc--two" aria-hidden="true"></span>
+        <span class="event-preloader__orbit" aria-hidden="true"></span>
+        <button class="event-preloader__portal" data-preloader-portal type="button" aria-label="Enter Excel Event Hub">
+          <span>
+            <span class="event-preloader__wordmark"><span>EXCEL</span><span>EVENT HUB</span></span>
+            <span class="event-preloader__tagline">LEARN / CONNECT / GROW</span>
+          </span>
+        </button>
+        <div class="event-preloader__status">
+          <span class="event-preloader__loading">INITIALIZING EVENT HUB...</span>
+          <div class="event-preloader__progress" aria-hidden="true"><span data-preloader-progress></span></div>
+          <span class="event-preloader__percent" data-preloader-percent>0%</span>
+        </div>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container navbar">
+        <div class="brand">
+          <div class="brand-mark">E</div>
+          <div>
+            <p class="brand-text" data-college-name>Excel Engineering College</p>
+            <p class="brand-subtext">Event Hub</p>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#home">Home</a>
+          <a href="events.html">Events</a>
+          <a href="register.html">Register</a>
+          <a href="about.html">About</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="admin-login.html" class="btn btn--ghost" title="Admin login" aria-label="Admin login" style="display:inline-flex;align-items:center;gap:0.5rem;margin-right:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 21v-1a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="small" style="display:inline-block;line-height:1">Admin</span>
+          </a>
+          <a href="events.html" class="btn btn--primary">Browse Events</a>
+          <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="home" class="hero">
+        <div class="container hero__visual home-hero" data-hero-image>
+          <div class="hero__content">
+            <span class="eyebrow">Excel Event Hub / Campus Experiences</span>
+            <h1>EXCEL<br /><span>EVENT HUB</span></h1>
+            <p class="hero-tagline">Explore <i>•</i> Participate <i>•</i> Grow</p>
+            <p class="home-hero__description">Excel Engineering College is a reputed engineering institution committed to academic excellence, innovation, and student development.</p>
+            <div class="hero__actions">
+              <a href="events.html" class="btn btn--primary">Explore Events <span aria-hidden="true">↘</span></a>
+              <a href="events.html" class="btn btn--secondary">Browse Events</a>
+            </div>
+            <div class="stat-grid" data-home-stats></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section home-categories-section">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">Find your lane</span>
+              <h2>Every kind of energy.</h2>
+            </div>
+          </div>
+          <div class="home-category-grid" data-home-categories></div>
+        </div>
+      </section>
+
+      <section class="section home-utility-section">
+        <div class="container feature-grid">
+          <div class="feature-box">
+            <div class="feature-box__icon">01</div>
+            <h3>Public Registration</h3>
+            <p>Students and participants can register without creating any account.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-box__icon">02</div>
+            <h3>Payment Tracking</h3>
+            <p>Payment status remains separate from registration details.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-box__icon">03</div>
+            <h3>Admin Dashboard</h3>
+            <p>Only secure admin workflows manage event and participant data.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section home-cta-section">
+        <div class="container">
+          <div class="callout">
+            <div>
+              <span class="section-kicker">Your next move</span>
+              <h2>Ready to participate?</h2>
+              <p>Find the event that feels like yours.</p>
+            </div>
+            <a href="events.html" class="btn btn--primary">Explore Events <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap home-footer-wrap">
+        <div class="home-footer__identity">
+          <p class="brand-text" data-college-name>Excel Engineering College</p>
+          <p data-college-location>Komarapalayam, Namakkal, Tamil Nadu, India</p>
+        </div>
+        <div class="home-footer__actions">
+          <a class="home-footer__whatsapp" data-whatsapp-footer-link target="_blank" rel="noopener noreferrer" aria-label="Join our WhatsApp Group" title="Join our WhatsApp Group">Join our WhatsApp Group</a>
+          <p class="home-footer__copyright">© 2026 Excel Event Hub</p>
+        </div>
+      </div>
+    </footer>
+
+    <a class="whatsapp-group-link" data-whatsapp-group-link target="_blank" rel="noopener noreferrer" aria-label="Join our WhatsApp Group" title="Join our WhatsApp Group">
+      <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <path d="M16.01 3.2A12.73 12.73 0 0 0 5.09 22.46L3.3 28.8l6.5-1.71A12.78 12.78 0 1 0 16.01 3.2Zm0 23.23c-1.9 0-3.75-.51-5.38-1.48l-.39-.23-3.86 1.02 1.03-3.76-.25-.4a10.42 10.42 0 1 1 8.85 4.85Zm5.72-7.81c-.31-.16-1.84-.91-2.13-1.02-.29-.11-.5-.16-.71.16-.21.31-.82 1.02-1 1.23-.18.21-.37.23-.68.08-.31-.16-1.32-.49-2.52-1.56-.93-.83-1.56-1.86-1.74-2.17-.18-.31-.02-.48.14-.64.14-.14.31-.37.47-.55.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.55-.08-.16-.71-1.7-.97-2.32-.26-.61-.52-.52-.71-.53h-.61c-.21 0-.55.08-.84.39-.29.31-1.1 1.07-1.1 2.61s1.13 3.03 1.29 3.24c.16.21 2.22 3.39 5.38 4.75.75.32 1.34.52 1.8.66.76.24 1.45.2 2 .12.61-.09 1.84-.75 2.1-1.48.26-.73.26-1.36.18-1.49-.08-.13-.29-.21-.6-.37Z" fill="currentColor"/>
+      </svg>
+    </a>
+
+    <script src="data/college.js"></script>
+    <script src="data/events.js"></script>
+    <script src="js/preloader.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/mouse-trail.js"></script>
+  </body>
+</html>

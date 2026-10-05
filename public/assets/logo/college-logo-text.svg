@@ -1,0 +1,7 @@
+<svg width="420" height="120" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="120" rx="18" fill="#0B1F3A"/>
+  <rect x="18" y="18" width="84" height="84" rx="18" fill="#F97316"/>
+  <path d="M35 35H85V45H35V35ZM35 55H85V65H35V55ZM35 75H70V85H35V75Z" fill="white"/>
+  <text x="120" y="55" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="700">Excel</text>
+  <text x="120" y="85" fill="#CFE3FF" font-family="Arial, sans-serif" font-size="18" font-weight="600">Engineering College</text>
+</svg>
