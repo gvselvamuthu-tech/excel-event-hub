@@ -5,6 +5,7 @@ const eventSchema = new mongoose.Schema({
   title: { type: String, required: true },
   category: String,
   status: String,
+  registrationFee: { type: Number, default: 0 },
   qrCode: String,
   scannerEnabled: mongoose.Schema.Types.Mixed
 }, {

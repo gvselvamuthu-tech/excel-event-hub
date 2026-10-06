@@ -3,6 +3,8 @@ const http = require("node:http");
 const path = require("node:path");
 const vm = require("node:vm");
 const ExcelJS = require("exceljs");
+const QRCode = require("qrcode");
+const { parseRegistrationFee, buildEventUpiPaymentLink } = require("./public/js/payment-config");
 
 const ROOT = __dirname;
 require("dotenv").config({ path: path.join(ROOT, ".env") });
@@ -119,6 +121,19 @@ async function readEvents() {
   };
 }
 
+async function migrateEventRegistrationFees() {
+  const events = await Event.find({}, { id: 1, registrationFee: 1 }).lean();
+  for (const event of events) {
+    const registrationFee = parseRegistrationFee(event.registrationFee);
+    if (registrationFee === null) {
+      throw new Error(`Event "${event.id}" has an invalid registration fee. Correct it before starting the service.`);
+    }
+    if (typeof event.registrationFee !== "number" || event.registrationFee !== registrationFee) {
+      await Event.updateOne({ id: event.id }, { $set: { registrationFee } });
+    }
+  }
+}
+
 async function writeEvents(payload) {
   if (!payload || !Array.isArray(payload.technical) || !Array.isArray(payload.nonTechnical)) {
     throw new Error("Events must include technical and nonTechnical arrays.");
@@ -129,8 +144,20 @@ async function writeEvents(payload) {
   }
   const ids = events.map((event) => String(event.id));
   if (new Set(ids).size !== ids.length) throw new Error("Event ids must be unique.");
+  const existingEvents = await Event.find({ id: { $in: ids } }, { id: 1, registrationFee: 1 }).lean();
+  const existingById = new Map(existingEvents.map((event) => [String(event.id), event]));
   const normalized = events.map((event) => ({
     ...event,
+    registrationFee: (() => {
+      const hasFee = Object.prototype.hasOwnProperty.call(event, "registrationFee");
+      const existing = existingById.get(String(event.id));
+      if (!hasFee && !existing) throw new Error(`Registration fee is required for new event "${event.id}".`);
+      const registrationFee = parseRegistrationFee(hasFee ? event.registrationFee : existing.registrationFee);
+      if (registrationFee === null) {
+        throw new Error(`Registration fee for event "${event.id}" must be a non-negative number with up to two decimal places.`);
+      }
+      return registrationFee;
+    })(),
     category: payload.technical.includes(event) ? "Technical" : "Non-Technical",
     qrCode: String(event.qrCode || "").trim() || "upi:auto",
     scannerEnabled: event.scannerEnabled !== undefined && event.scannerEnabled !== null && String(event.scannerEnabled).trim() !== ""
@@ -234,7 +261,31 @@ function serveStatic(request, response, pathname) {
 const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, "http://localhost");
   try {
-    if (request.method === "GET" && url.pathname === "/api/events") {
+    const paymentQrMatch = /^\/api\/events\/([^/]+)\/payment-qr$/.exec(url.pathname);
+    if (request.method === "GET" && paymentQrMatch) {
+      const eventId = decodeURIComponent(paymentQrMatch[1]);
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/.test(eventId)) {
+        sendJson(response, 400, { error: "A valid event id is required to generate a payment QR." });
+        return;
+      }
+      const event = await Event.findOne({ id: eventId }, { id: 1, title: 1, registrationFee: 1 }).lean();
+      if (!event) {
+        sendJson(response, 404, { error: "The selected event could not be found." });
+        return;
+      }
+      if (parseRegistrationFee(event.registrationFee) === null) {
+        throw new Error(`Event "${event.id}" has an invalid registration fee; its payment QR cannot be generated.`);
+      }
+      const paymentUri = buildEventUpiPaymentLink(event);
+      const qrImage = await QRCode.toBuffer(paymentUri, {
+        type: "png",
+        errorCorrectionLevel: "H",
+        margin: 2,
+        width: 512
+      });
+      response.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-store" });
+      response.end(qrImage);
+    } else if (request.method === "GET" && url.pathname === "/api/events") {
       sendJson(response, 200, await readEvents());
     } else if (request.method === "PUT" && url.pathname === "/api/events") {
       await writeEvents(await readJson(request));
@@ -310,6 +361,7 @@ async function startServer() {
   await mongoose.connect(mongoUri);
   console.log("MongoDB connected");
   await Event.collection.createIndex({ id: 1 }, { unique: true });
+  await migrateEventRegistrationFees();
   await initializeWorkbooks();
   server.listen(port, "0.0.0.0", () => {
     console.log(`Excel Event Hub running at http://0.0.0.0:${port}`);

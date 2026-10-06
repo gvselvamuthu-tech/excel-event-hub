@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (name) name.textContent = selectedEvent.title;
     if (category) category.textContent = selectedEvent.category + " Event";
-    if (fee) fee.textContent = selectedEvent.registrationFee;
+    if (fee) fee.textContent = window.formatRegistrationFee(selectedEvent.registrationFee);
     if (date) date.textContent = selectedEvent.date.replace(/^Sample:\s*/i, "");
     if (time) time.textContent = selectedEvent.time.replace(/^Sample:\s*/i, "");
     if (venue) venue.textContent = selectedEvent.venue.replace(/^Sample:\s*/i, "");
@@ -62,11 +62,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (qrWrap && qrImage) {
       qrImage.onerror = () => {
         qrImage.onerror = null;
-        if (selectedEvent.qrCode && String(selectedEvent.qrCode).toLowerCase() !== "upi:auto") {
-          qrImage.src = window.getEventPaymentQrUrl({ ...selectedEvent, qrCode: "upi:auto" });
-        } else {
-          qrWrap.hidden = true;
-        }
+        qrImage.hidden = true;
+        const errorMessage = document.createElement("p");
+        errorMessage.className = "event-qr-card__error";
+        errorMessage.setAttribute("role", "alert");
+        errorMessage.textContent = "The payment QR code could not be generated.";
+        qrImage.after(errorMessage);
       };
       qrImage.src = window.getEventPaymentQrUrl(selectedEvent);
       qrWrap.hidden = !registrationOpen;

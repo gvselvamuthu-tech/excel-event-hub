@@ -65,13 +65,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     qrImage.alt = `${selectedEvent?.title || "Selected event"} QR code`;
     qrImage.width = 170;
     qrImage.height = 170;
-    const assignedQr = selectedEvent?.qrCode && String(selectedEvent.qrCode).toLowerCase() !== "upi:auto";
-    if (assignedQr) {
-      qrImage.onerror = () => {
-        qrImage.onerror = null;
-        qrImage.src = window.getEventPaymentQrUrl({ ...selectedEvent, qrCode: "upi:auto" });
-      };
-    }
+    qrImage.onerror = () => {
+      qrImage.onerror = null;
+      const errorMessage = document.createElement("p");
+      errorMessage.setAttribute("role", "alert");
+      errorMessage.textContent = "The payment QR code could not be generated.";
+      qrCodeContainer.replaceChildren(errorMessage);
+    };
     qrImage.src = window.getEventPaymentQrUrl(selectedEvent);
     qrCodeContainer.replaceChildren(qrImage);
   };
@@ -190,12 +190,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const statusNode = document.getElementById("summary-status");
     const eventName = record?.eventName || selectedEvent?.title || "Selected Event";
     const participantName = record?.fullName || registrationData?.fullName || "Participant";
-    const amount = record?.amount || selectedEvent?.registrationFee || "₹0";
+    const amount = record?.amount ?? selectedEvent?.registrationFee ?? 0;
     const paymentStatus = (record?.paymentStatus || "Pending").toLowerCase() === "submitted" ? "Submitted" : record?.paymentStatus || "Pending";
 
     if (eventNameNode) eventNameNode.textContent = eventName;
     if (participantNameNode) participantNameNode.textContent = participantName;
-    if (amountNode) amountNode.textContent = amount;
+    if (amountNode) amountNode.textContent = window.formatRegistrationFee(amount);
     if (statusNode) statusNode.textContent = paymentStatus;
   };
 
@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (eventNameNode) eventNameNode.textContent = record?.eventName || selectedEvent?.title || "Selected Event";
     if (participantNameNode) participantNameNode.textContent = record?.fullName || registrationData?.fullName || "Participant";
     if (referenceIdNode) referenceIdNode.textContent = record?.referenceId || "Pending";
-    if (amountNode) amountNode.textContent = record?.amount || selectedEvent?.registrationFee || "₹0";
+    if (amountNode) amountNode.textContent = window.formatRegistrationFee(record?.amount ?? selectedEvent?.registrationFee ?? 0);
     if (statusNode) statusNode.textContent = record?.paymentStatus || "Submitted";
   };
 
@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const registrationIdNode = document.getElementById("payment-student-id");
 
   if (eventNameNode) eventNameNode.textContent = selectedEvent.title;
-  if (eventFeeNode) eventFeeNode.textContent = selectedEvent.registrationFee;
+  if (eventFeeNode) eventFeeNode.textContent = window.formatRegistrationFee(selectedEvent.registrationFee);
   if (eventDateNode) eventDateNode.textContent = selectedEvent.date.replace(/^Sample:\s*/i, "");
   if (eventTimeNode) eventTimeNode.textContent = selectedEvent.time.replace(/^Sample:\s*/i, "");
   if (eventVenueNode) eventVenueNode.textContent = selectedEvent.venue.replace(/^Sample:\s*/i, "");
@@ -268,7 +268,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const hasValidUpiId = Boolean(upiId && upiId !== "YOUR_UPI_ID_HERE");
 
   if (upiIdField) upiIdField.value = hasValidUpiId ? upiId : "YOUR_UPI_ID_HERE";
-  if (amountField) amountField.value = selectedEvent.registrationFee;
+  if (amountField) amountField.value = window.formatRegistrationFee(selectedEvent.registrationFee);
 
   renderQrCode();
 

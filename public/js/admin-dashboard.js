@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <td>${row.phone || '—'}</td>
         <td>${row.department || '—'}</td>
         <td>${row.year || '—'}</td>
-        <td>${row.amount || '—'}</td>
+        <td>${typeof row.amount === 'number' ? `₹${row.amount}` : row.amount || '—'}</td>
         <td>${row.paymentTransactionId || '—'}</td>
         <td>${formatDate(row.registrationDate || row.registrationDateTime)}</td>
       </tr>
@@ -312,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
     eventsData.nonTechnical.forEach((event) => rows.push({ ...event, category: 'Non-Technical' }));
 
     eventsTableBody.innerHTML = rows.map((item) => `
-      <tr data-id="${item.id}"><td>${item.title}</td><td>${item.category}</td><td>${item.registrationFee || ''}</td>
+      <tr data-id="${item.id}"><td>${item.title}</td><td>${item.category}</td><td>₹${item.registrationFee ?? 0}</td>
       <td><button class="btn btn--secondary edit-event">Edit</button> <button class="btn btn--ghost delete-event">Delete</button></td></tr>
     `).join('');
 
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
     formFields.namedItem('date').value = item.date || '';
     formFields.namedItem('time').value = item.time || '';
     formFields.namedItem('venue').value = item.venue || '';
-    formFields.namedItem('registrationFee').value = item.registrationFee || '';
+    formFields.namedItem('registrationFee').value = item.registrationFee ?? 0;
     formFields.namedItem('registrationDeadline').value = item.registrationDeadline || '';
     formFields.namedItem('image').value = item.image || '';
     formFields.namedItem('teamSize').value = item.teamSize || '';
@@ -480,6 +480,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   eventForm.addEventListener('submit', async function (e) {
     e.preventDefault();
+    const feeField = eventForm.elements.namedItem('registrationFee');
+    const registrationFee = feeField.valueAsNumber;
+    if (!feeField.value.trim() || !Number.isFinite(registrationFee) || registrationFee < 0) {
+      return alert('Registration Fee must be a non-negative number.');
+    }
+    if (!/^\d+(?:\.\d{1,2})?$/.test(feeField.value.trim())) {
+      return alert('Registration Fee can have at most two decimal places.');
+    }
     const values = {
       id: (eventForm.elements.namedItem('id').value || '').trim(),
       title: (eventForm.elements.namedItem('title').value || '').trim(),
@@ -489,7 +497,7 @@ document.addEventListener('DOMContentLoaded', function () {
       date: (eventForm.elements.namedItem('date').value || '').trim(),
       time: (eventForm.elements.namedItem('time').value || '').trim(),
       venue: (eventForm.elements.namedItem('venue').value || '').trim(),
-      registrationFee: (eventForm.elements.namedItem('registrationFee').value || '').trim(),
+      registrationFee,
       registrationDeadline: (eventForm.elements.namedItem('registrationDeadline').value || '').trim(),
       image: (eventForm.elements.namedItem('image').value || '').trim(),
       qrCode: (eventForm.elements.namedItem('qrCode').value || '').trim(),
@@ -526,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function () {
       title: values.title,
       category: values.category,
       status: values.status,
-      registrationFee: values.registrationFee || existing.registrationFee || '₹0',
+      registrationFee: values.registrationFee,
       image: values.image || existing.image || 'assets/images/event-placeholder.svg'
     };
     const filtered = all.filter((event) => event.id !== editingId);
