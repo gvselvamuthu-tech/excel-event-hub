@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const logoutBtn = document.getElementById('admin-logout');
   const refreshBtn = document.getElementById('refresh-data');
   const refreshWorkbookBtn = document.getElementById('refresh-workbook-data');
+  const downloadRegistrationsBtn = document.getElementById('downloadRegistrationsBtn');
+  const downloadPaymentsBtn = document.getElementById('downloadPaymentsBtn');
   const exportBtn = document.getElementById('export-data');
 
   let eventsData = { technical: [], nonTechnical: [] };
@@ -129,6 +131,36 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!response.ok) throw new Error(result.error || `Request failed (${response.status}).`);
     return result;
   }
+
+  async function downloadWorkbook(path, filename, label) {
+    setDashboardError('');
+    try {
+      const response = await fetch(apiUrl(path));
+      if (!response.ok) {
+        let result = {};
+        try {
+          result = await response.json();
+        } catch (error) {
+          result = {};
+        }
+        throw new Error(result.error || `Request failed (${response.status}).`);
+      }
+      const workbook = await response.blob();
+      const downloadUrl = URL.createObjectURL(workbook);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    } catch (error) {
+      setDashboardError(`${label} could not be downloaded. ${error.message || 'Please try again.'}`);
+    }
+  }
+
+  const downloadRegistrations = () => downloadWorkbook('registrations/download', 'registrations.xlsx', 'Registrations');
+  const downloadPayments = () => downloadWorkbook('payments/download', 'payments.xlsx', 'Payments');
 
   function showToast(message, timeout = 3000) {
     try {
@@ -403,24 +435,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return /\bseminar\b/i.test(`${event.id || ''} ${event.title || ''}`);
   }
 
-  function readFileAsDataUrl(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(new Error('The selected QR image could not be read.'));
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function uploadEventQr(file, eventId) {
-    const dataUrl = await readFileAsDataUrl(file);
-    const result = await apiRequest(`event-qr/${encodeURIComponent(eventId)}`, {
-      method: 'POST',
-      body: JSON.stringify({ dataUrl })
-    });
-    return result.qrCode;
-  }
-
   function openEditEvent(id) {
     const all = eventsData.technical.concat(eventsData.nonTechnical);
     const item = all.find((x) => x.id === id);
@@ -436,8 +450,6 @@ document.addEventListener('DOMContentLoaded', function () {
     formFields.namedItem('category').value = item.category || 'Technical';
     formFields.namedItem('status').value = String(item.status || 'Open').trim().toLowerCase() === 'closed' ? 'Closed' : 'Open';
     formFields.namedItem('scannerEnabled').checked = isScannerEnabledForEvent(item);
-    formFields.namedItem('qrCode').value = item.qrCode || '';
-    formFields.namedItem('qrImageUpload').value = '';
     formFields.namedItem('date').value = item.date || '';
     formFields.namedItem('time').value = item.time || '';
     formFields.namedItem('venue').value = item.venue || '';
@@ -500,7 +512,6 @@ document.addEventListener('DOMContentLoaded', function () {
       registrationFee,
       registrationDeadline: (eventForm.elements.namedItem('registrationDeadline').value || '').trim(),
       image: (eventForm.elements.namedItem('image').value || '').trim(),
-      qrCode: (eventForm.elements.namedItem('qrCode').value || '').trim(),
       teamSize: (eventForm.elements.namedItem('teamSize').value || '').trim(),
       maxParticipants: (eventForm.elements.namedItem('maxParticipants').value || '').trim(),
       shortDescription: (eventForm.elements.namedItem('shortDescription').value || '').trim(),
@@ -517,15 +528,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const existing = all.find((event) => event.id === editingId) || {};
     if (all.some((event) => event.id === values.id && event.id !== editingId)) {
       return alert('An event with this id already exists.');
-    }
-    const qrFile = eventForm.elements.namedItem('qrImageUpload').files[0];
-    if (qrFile) {
-      try {
-        values.qrCode = await uploadEventQr(qrFile, values.id);
-      } catch (error) {
-        setDashboardError(`Event QR code could not be uploaded. ${error.message}`);
-        return;
-      }
     }
     const updatedEvent = {
       ...existing,
@@ -590,6 +592,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   refreshBtn.addEventListener('click', loadWorkbookData);
   refreshWorkbookBtn.addEventListener('click', loadWorkbookData);
+  downloadRegistrationsBtn.addEventListener('click', downloadRegistrations);
+  downloadPaymentsBtn.addEventListener('click', downloadPayments);
 
   exportBtn.addEventListener('click', function () {
     const payload = {

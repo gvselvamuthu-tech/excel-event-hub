@@ -106,6 +106,8 @@
                       <option value="pending">Pending</option>
                     </select>
                     <button id="refresh-workbook-data" class="btn btn--secondary">Refresh</button>
+                    <button id="downloadRegistrationsBtn" class="btn btn--primary" type="button">Download Registrations</button>
+                    <button id="downloadPaymentsBtn" class="btn btn--secondary" type="button">Download Payments</button>
                   </div>
                 </div>
 
@@ -194,10 +196,6 @@
                 <div class="form-field"><label>Registration Deadline</label><input name="registrationDeadline" type="text" placeholder="10 Sep 2026"></div>
                 <div class="form-field"><label>Image Path</label><input name="image" type="text" placeholder="assets/images/event-placeholder.svg"></div>
               </div>
-              <div class="form-row">
-                <div class="form-field"><label>Event QR Code Path / URL</label><input name="qrCode" type="text" placeholder="assets/images/event-qr.png"></div>
-                <div class="form-field"><label for="event-qr-upload">Upload Event QR Code</label><input id="event-qr-upload" name="qrImageUpload" type="file" accept="image/png,image/jpeg,image/webp"><small class="small">PNG, JPEG, or WebP; maximum 5 MB.</small></div>
-              </div>
               <div class="form-field checkbox-field">
                 <label class="checkbox-inline" for="scanner-enabled">
                   <input id="scanner-enabled" name="scannerEnabled" type="checkbox">
@@ -238,6 +236,6 @@
     <script src="../data/college.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/mouse-trail.js"></script>
-    <script src="../js/admin-dashboard.js?v=event-fee-validation-v1"></script>
+    <script src="../js/admin-dashboard.js?v=workbook-downloads-v1"></script>
   </body>
 </html>

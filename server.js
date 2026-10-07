@@ -5,6 +5,7 @@ const vm = require("node:vm");
 const ExcelJS = require("exceljs");
 const QRCode = require("qrcode");
 const { parseRegistrationFee, buildEventUpiPaymentLink } = require("./public/js/payment-config");
+const { normalizeLegacyRegistrationFee } = require("./lib/event-fees");
 
 const ROOT = __dirname;
 require("dotenv").config({ path: path.join(ROOT, ".env") });
@@ -124,10 +125,7 @@ async function readEvents() {
 async function migrateEventRegistrationFees() {
   const events = await Event.find({}, { id: 1, registrationFee: 1 }).lean();
   for (const event of events) {
-    const registrationFee = parseRegistrationFee(event.registrationFee);
-    if (registrationFee === null) {
-      throw new Error(`Event "${event.id}" has an invalid registration fee. Correct it before starting the service.`);
-    }
+    const registrationFee = normalizeLegacyRegistrationFee(event.registrationFee);
     if (typeof event.registrationFee !== "number" || event.registrationFee !== registrationFee) {
       await Event.updateOne({ id: event.id }, { $set: { registrationFee } });
     }
@@ -203,6 +201,32 @@ function sendJson(response, statusCode, body) {
   response.end(JSON.stringify(body));
 }
 
+async function sendWorkbookDownload(response, file, filename, label) {
+  try {
+    const workbookStat = await fs.promises.stat(file);
+    if (!workbookStat.isFile()) {
+      sendJson(response, 404, { error: `The ${label} workbook is not available for download.` });
+      return;
+    }
+    const workbook = await fs.promises.readFile(file);
+    response.writeHead(200, {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Length": workbook.length,
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff"
+    });
+    response.end(workbook);
+  } catch (error) {
+    const notFound = error.code === "ENOENT";
+    sendJson(response, notFound ? 404 : 500, {
+      error: notFound
+        ? `The ${label} workbook was not found.`
+        : `The ${label} workbook could not be downloaded.`
+    });
+  }
+}
+
 function readJson(request, maxBytes = 1024 * 1024) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -264,7 +288,7 @@ const server = http.createServer(async (request, response) => {
     const paymentQrMatch = /^\/api\/events\/([^/]+)\/payment-qr$/.exec(url.pathname);
     if (request.method === "GET" && paymentQrMatch) {
       const eventId = decodeURIComponent(paymentQrMatch[1]);
-      if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/.test(eventId)) {
+      if (!eventId.trim()) {
         sendJson(response, 400, { error: "A valid event id is required to generate a payment QR." });
         return;
       }
@@ -320,6 +344,8 @@ const server = http.createServer(async (request, response) => {
       sendJson(response, 201, { qrCode: `uploads/event-qr/${eventId}.${extension}` });
     } else if (request.method === "GET" && url.pathname === "/api/registrations") {
       sendJson(response, 200, await readWorkbookData(WORKBOOKS.registrations, "Registrations"));
+    } else if (request.method === "GET" && url.pathname === "/api/registrations/download") {
+      await sendWorkbookDownload(response, WORKBOOKS.registrations, "registrations.xlsx", "registrations");
     } else if (request.method === "POST" && url.pathname === "/api/registrations") {
       const record = await readJson(request);
       if (!record.referenceId) throw new Error("Registration referenceId is required.");
@@ -334,6 +360,8 @@ const server = http.createServer(async (request, response) => {
       sendJson(response, 201, { success: true });
     } else if (request.method === "GET" && url.pathname === "/api/payments") {
       sendJson(response, 200, await readWorkbookData(WORKBOOKS.payments, "Payments"));
+    } else if (request.method === "GET" && url.pathname === "/api/payments/download") {
+      await sendWorkbookDownload(response, WORKBOOKS.payments, "payments.xlsx", "payments");
     } else if (request.method === "POST" && url.pathname === "/api/payments") {
       const record = await readJson(request);
       if (!record.referenceId) throw new Error("Payment referenceId is required.");

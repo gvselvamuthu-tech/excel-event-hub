@@ -14,8 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const teamFields = document.getElementById("team-fields");
   const teamMembersWrap = document.getElementById("team-members");
   const teamSizeInput = document.getElementById("team-size");
-  const qrWrap = document.getElementById("reg-event-qr-wrap");
-  const qrImage = document.getElementById("reg-event-qr");
   const registrationOpen = selectedEvent && (window.isEventRegistrationOpen
     ? window.isEventRegistrationOpen(selectedEvent)
     : String(selectedEvent.status || "Open").trim().toLowerCase() !== "closed");
@@ -59,19 +57,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (time) time.textContent = selectedEvent.time.replace(/^Sample:\s*/i, "");
     if (venue) venue.textContent = selectedEvent.venue.replace(/^Sample:\s*/i, "");
     if (eventNameInput) eventNameInput.value = selectedEvent.title;
-    if (qrWrap && qrImage) {
-      qrImage.onerror = () => {
-        qrImage.onerror = null;
-        qrImage.hidden = true;
-        const errorMessage = document.createElement("p");
-        errorMessage.className = "event-qr-card__error";
-        errorMessage.setAttribute("role", "alert");
-        errorMessage.textContent = "The payment QR code could not be generated.";
-        qrImage.after(errorMessage);
-      };
-      qrImage.src = window.getEventPaymentQrUrl(selectedEvent);
-      qrWrap.hidden = !registrationOpen;
-    }
   };
 
   const renderTeamMembers = () => {

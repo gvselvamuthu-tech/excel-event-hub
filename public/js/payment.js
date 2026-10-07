@@ -2,44 +2,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const paymentForm = document.getElementById("payment-form");
   const paymentMessage = document.getElementById("payment-message");
   const qrCodeContainer = document.getElementById("upi-qr-code");
-  const qrScanTrigger = document.getElementById("qr-scan-trigger");
-  const qrScannerModal = document.getElementById("qr-scanner-modal");
-  const qrScannerStatus = document.getElementById("qr-scanner-status");
-  const qrVideo = document.getElementById("qr-video");
-  const qrScannerCloseButton = document.getElementById("close-qr-scanner");
   const upiLinkButton = document.getElementById("upi-pay-link");
   const upiIdField = document.getElementById("upi-id");
   const amountField = document.getElementById("amount");
   const completePaymentButton = document.getElementById("complete-payment-btn");
   const formWrapper = document.getElementById("payment-form-wrapper");
   const confirmationWrapper = document.getElementById("payment-confirmation");
-  let qrCameraStream = null;
-  let qrScanTimer = null;
-  let qrScanResolved = false;
-
   if (!paymentForm) return;
-
-  if (qrScanTrigger) {
-    qrScanTrigger.addEventListener("click", openQrScanner);
-  }
-
-  if (qrScannerCloseButton) {
-    qrScannerCloseButton.addEventListener("click", stopQrScanner);
-  }
-
-  if (qrScannerModal) {
-    qrScannerModal.addEventListener("click", (event) => {
-      if (event.target === qrScannerModal || event.target instanceof HTMLElement && event.target.matches("[data-close-qr-scanner]")) {
-        stopQrScanner();
-      }
-    });
-  }
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && qrScannerModal && !qrScannerModal.hidden) {
-      stopQrScanner();
-    }
-  });
 
   await window.fetchLatestEventData?.().catch(() => window.getEventData?.() || window.EVENT_DATA || { technical: [], nonTechnical: [] });
   const allEvents = window.getAllEvents ? window.getAllEvents() : [...(window.EVENT_DATA?.technical || []), ...(window.EVENT_DATA?.nonTechnical || [])];
@@ -75,98 +44,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     qrImage.src = window.getEventPaymentQrUrl(selectedEvent);
     qrCodeContainer.replaceChildren(qrImage);
   };
-
-  const setScannerStatus = (message, isError = false) => {
-    if (!qrScannerStatus) return;
-    qrScannerStatus.textContent = message;
-    qrScannerStatus.style.color = isError ? "#ff9aae" : "#d9f7ff";
-  };
-
-  function stopQrScanner() {
-    if (qrScanTimer) {
-      window.clearInterval(qrScanTimer);
-      qrScanTimer = null;
-    }
-
-    if (qrCameraStream) {
-      qrCameraStream.getTracks().forEach((track) => track.stop());
-      qrCameraStream = null;
-    }
-
-    if (qrVideo) {
-      qrVideo.pause();
-      qrVideo.srcObject = null;
-    }
-
-    if (qrScannerModal) {
-      qrScannerModal.hidden = true;
-      qrScannerModal.setAttribute("aria-hidden", "true");
-    }
-
-    document.body.classList.remove("modal-open");
-    qrScanResolved = false;
-  }
-
-  async function openQrScanner() {
-    if (!qrScannerModal || !qrVideo) return;
-
-    qrScannerModal.hidden = false;
-    qrScannerModal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    qrScanResolved = false;
-    setScannerStatus("Requesting camera access...");
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setScannerStatus("This browser does not support camera scanning. Please use the UPI app pay link instead.", true);
-      return;
-    }
-
-    try {
-      qrCameraStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      });
-
-      qrVideo.srcObject = qrCameraStream;
-      await qrVideo.play().catch(() => undefined);
-
-      const supportsBarcodeDetector = "BarcodeDetector" in window;
-      if (!supportsBarcodeDetector) {
-        setScannerStatus("Camera is ready, but this browser does not support in-browser QR decoding. Please scan manually with the UPI app or use the direct pay link.", true);
-        return;
-      }
-
-      const decoder = new BarcodeDetector({ formats: ["qr_code"] });
-      setScannerStatus("Scanning for QR code...");
-
-      qrScanTimer = window.setInterval(async () => {
-        if (qrScanResolved || !qrVideo || qrVideo.readyState < 2) return;
-
-        try {
-          const detectionResults = await decoder.detect(qrVideo);
-          const detectedBarcode = detectionResults.find((barcode) => barcode?.rawValue);
-
-          if (!detectedBarcode) return;
-
-          qrScanResolved = true;
-          const scannedValue = detectedBarcode.rawValue;
-          setScannerStatus(`QR code scanned successfully. ${scannedValue}`);
-          setMessage("QR scan succeeded. Complete payment in your UPI app and then enter the UTR/transaction ID.", "success");
-          window.clearInterval(qrScanTimer);
-          qrScanTimer = null;
-          window.setTimeout(() => stopQrScanner(), 1800);
-        } catch (error) {
-          setScannerStatus("Scanning for QR code...");
-        }
-      }, 550);
-    } catch (error) {
-      setScannerStatus("Camera access was denied or unavailable. Please allow access or use the direct UPI pay link.", true);
-    }
-  }
 
   const setMessage = (message, type = "success") => {
     if (!paymentMessage) return;
@@ -219,16 +96,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!selectedEvent) {
     setMessage("The selected event could not be found. Please go back and choose a valid event.", "error");
     return;
-  }
-
-  const scannerEnabled = window.isEventQrScannerEnabled
-    ? window.isEventQrScannerEnabled(selectedEvent)
-    : (selectedEvent.scannerEnabled !== undefined
-      ? ["true", "1", "yes"].includes(String(selectedEvent.scannerEnabled).trim().toLowerCase())
-      : /\bseminar\b/i.test(`${selectedEvent.id || ""} ${selectedEvent.title || ""}`));
-  if (qrScanTrigger) {
-    qrScanTrigger.disabled = !scannerEnabled;
-    qrScanTrigger.setAttribute("aria-label", scannerEnabled ? "Scan QR Code" : "QR scanner unavailable for this event");
   }
 
   const registrationMatchesEvent = Boolean(registrationData);

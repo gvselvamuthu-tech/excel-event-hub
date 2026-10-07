@@ -5,6 +5,7 @@ const {
   PAYMENT_CONFIG,
   buildEventUpiPaymentLink,
   formatRegistrationFee,
+  getEventPaymentQrUrl,
   parseRegistrationFee
 } = require("../public/js/payment-config");
 
@@ -56,4 +57,11 @@ test("payment QR generation returns a PNG for the event-specific UPI URI", async
 
   assert.deepEqual([...image.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10]);
   assert.ok(image.length > 100);
+});
+
+test("payment QR URLs encode event ids containing path separators", () => {
+  assert.equal(
+    getEventPaymentQrUrl({ id: "EEC/IT/2026-27/AEP/ACTNO.8." }),
+    "/api/events/EEC%2FIT%2F2026-27%2FAEP%2FACTNO.8./payment-qr"
+  );
 });

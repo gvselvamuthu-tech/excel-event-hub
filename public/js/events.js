@@ -204,8 +204,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const status = eventStatus.toUpperCase();
   const registrationClosed = eventStatus === "closed";
   const eventImage = resolveEventImage(currentEvent.image, currentEvent.id);
-  const paymentQrUrl = window.getEventPaymentQrUrl(currentEvent);
-  const paymentUri = window.buildEventUpiPaymentLink(currentEvent);
   const registrationAction = registrationClosed
     ? '<span class="btn btn--secondary" aria-disabled="true">Registration Closed</span>'
     : `<a href="register.html?event=${currentEvent.id}" class="btn btn--primary">Register Now</a>`;
@@ -223,11 +221,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           <p>${currentEvent.shortDescription || currentEvent.description}</p>
           <div class="event-details-actions">
             ${registrationAction}
-          </div>
-          <div class="event-qr-card">
-            <p class="event-qr-card__title">Payment QR Code</p>
-            <img class="event-qr-card__image" src="${paymentQrUrl}" alt="UPI payment QR for ${currentEvent.title}" />
-            <a href="${paymentUri}" class="btn btn--secondary" target="_blank" rel="noreferrer">Pay via UPI App</a>
           </div>
         </div>
       </div>
@@ -272,13 +265,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     </article>
   `;
-  const paymentQrImage = container.querySelector(".event-qr-card__image");
-  paymentQrImage?.addEventListener("error", () => {
-    paymentQrImage.hidden = true;
-    const errorMessage = document.createElement("p");
-    errorMessage.className = "event-qr-card__error";
-    errorMessage.setAttribute("role", "alert");
-    errorMessage.textContent = "The payment QR code could not be generated.";
-    paymentQrImage.after(errorMessage);
-  }, { once: true });
 });
