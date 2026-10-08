@@ -103,14 +103,20 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    let pathname = "";
-    const directUrl = new URL(req.url || "/", "http://localhost");
-    if (directUrl.pathname.startsWith("/api/")) {
-      pathname = directUrl.pathname;
+    const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
+    const url = new URL(matchedPath, "http://localhost");
+    let pathname = url.pathname;
+    
+    // Normalize path if running behind rewrites
+    if (pathname.startsWith("/api/")) {
+      // standard path
+    } else if (req.query && req.query.path) {
+      pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
     } else {
-      const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
-      const url = new URL(matchedPath, "http://localhost");
-      pathname = url.pathname;
+      const directUrl = new URL(req.url, "http://localhost");
+      if (directUrl.pathname.startsWith("/api/")) {
+        pathname = directUrl.pathname;
+      }
     }
 
     const method = req.method ? req.method.toUpperCase() : "GET";

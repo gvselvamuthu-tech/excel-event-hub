@@ -2,52 +2,24 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/admin/verify",
-      "destination": "/api/admin.js"
+      "source": "/api/events/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/event-qr/(.*)",
+      "destination": "/api/index.js"
     },
     {
       "source": "/api/admin/(.*)",
-      "destination": "/api/admin.js"
-    },
-    {
-      "source": "/api/events/:eventId/payment-qr",
-      "destination": "/api/events.js?eventId=:eventId&qr=1"
-    },
-    {
-      "source": "/api/events/(.*)",
-      "destination": "/api/events.js"
-    },
-    {
-      "source": "/api/events",
-      "destination": "/api/events.js"
-    },
-    {
-      "source": "/api/payments/download",
-      "destination": "/api/payments.js?download=1"
-    },
-    {
-      "source": "/api/payments/clear",
-      "destination": "/api/payments.js?clear=1"
+      "destination": "/api/index.js"
     },
     {
       "source": "/api/payments/(.*)",
-      "destination": "/api/payments.js"
-    },
-    {
-      "source": "/api/payments",
-      "destination": "/api/payments.js"
-    },
-    {
-      "source": "/api/registrations/download",
-      "destination": "/api/registrations.js?download=1"
+      "destination": "/api/index.js"
     },
     {
       "source": "/api/registrations/(.*)",
-      "destination": "/api/registrations.js"
-    },
-    {
-      "source": "/api/registrations",
-      "destination": "/api/registrations.js"
+      "destination": "/api/index.js"
     },
     {
       "source": "/data/(.*)",
