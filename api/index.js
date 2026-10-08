@@ -103,7 +103,8 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const url = new URL(req.url, "http://localhost");
+    const rawPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
+    const url = new URL(rawPath, "http://localhost");
     let pathname = url.pathname;
     
     // Normalize path if running behind rewrites
