@@ -6,18 +6,25 @@ const ExcelJS = require("exceljs");
 const QRCode = require("qrcode");
 const { parseRegistrationFee, buildEventUpiPaymentLink } = require("./public/js/payment-config");
 const { normalizeLegacyRegistrationFee } = require("./lib/event-fees");
+const { withWorkbookLock } = require("./lib/workbook-lock");
 
 const ROOT = __dirname;
 require("dotenv").config({ path: path.join(ROOT, ".env") });
 
+const { verifyAdminCredentials } = require("./lib/admin-credentials");
+const { clearWorkbookRecords } = require("./lib/workbook-records");
 const mongoose = require("mongoose");
 const Event = require("./models/Event");
+const Registration = require("./models/Registration");
+const Payment = require("./models/Payment");
+const { generateExcelBuffer } = require("./lib/excel-export");
 const mongoUri = process.env.MONGODB_URI;
 
 const PUBLIC_DIR = path.join(ROOT, "public");
 const DATA_DIR = path.join(ROOT, "data");
 const UPLOADS_DIR = path.join(ROOT, "uploads");
 const EVENT_QR_DIR = path.join(UPLOADS_DIR, "event-qr");
+const BACKUPS_DIR = path.join(DATA_DIR, "backups");
 const WORKBOOKS = {
   events: path.join(DATA_DIR, "events.xlsx"),
   registrations: path.join(DATA_DIR, "registrations.xlsx"),
@@ -183,17 +190,19 @@ async function appendRecord(file, sheetName, fields, record, uniqueField) {
   if (!record || typeof record !== "object" || Array.isArray(record)) {
     throw new Error("A record object is required.");
   }
-  const current = await readWorkbookData(file, sheetName);
-  const next = { ...record };
-  if (uniqueField && next[uniqueField]) {
-    const existingIndex = current.findIndex((row) => String(row[uniqueField]) === String(next[uniqueField]));
-    if (existingIndex >= 0) current[existingIndex] = next;
-    else current.push(next);
-  } else {
-    current.push(next);
-  }
-  const allFields = [...new Set([...fields, ...current.flatMap((row) => Object.keys(row))])];
-  await writeRows(file, sheetName, allFields, current);
+  return withWorkbookLock(file, async () => {
+    const current = await readWorkbookData(file, sheetName);
+    const next = { ...record };
+    if (uniqueField && next[uniqueField]) {
+      const existingIndex = current.findIndex((row) => String(row[uniqueField]) === String(next[uniqueField]));
+      if (existingIndex >= 0) current[existingIndex] = next;
+      else current.push(next);
+    } else {
+      current.push(next);
+    }
+    const allFields = [...new Set([...fields, ...current.flatMap((row) => Object.keys(row))])];
+    await writeRows(file, sheetName, allFields, current);
+  });
 }
 
 function sendJson(response, statusCode, body) {
@@ -286,7 +295,38 @@ const server = http.createServer(async (request, response) => {
   const url = new URL(request.url, "http://localhost");
   try {
     const paymentQrMatch = /^\/api\/events\/([^/]+)\/payment-qr$/.exec(url.pathname);
-    if (request.method === "GET" && paymentQrMatch) {
+    if (request.method === "POST" && url.pathname === "/api/admin/verify") {
+      const { username, password } = await readJson(request, 8192);
+      if (!verifyAdminCredentials(username, password)) {
+        sendJson(response, 401, { error: "Invalid admin credentials" });
+        return;
+      }
+      sendJson(response, 200, { verified: true });
+    } else if (request.method === "POST" && url.pathname === "/api/payments/clear") {
+      const { username, password, confirmed } = await readJson(request, 8192);
+      if (!verifyAdminCredentials(username, password)) {
+        sendJson(response, 401, { error: "Invalid admin credentials" });
+        return;
+      }
+      if (confirmed !== true) {
+        sendJson(response, 400, { error: "Explicit confirmation is required before clearing payment records." });
+        return;
+      }
+      try {
+        const countBefore = await Payment.countDocuments();
+        await Payment.deleteMany({});
+        sendJson(response, 200, {
+          success: true,
+          message: "All payment records cleared successfully.",
+          clearedCount: countBefore,
+          remainingCount: 0,
+          backupFile: "mongodb-cleared"
+        });
+      } catch (error) {
+        console.error("Could not clear payment records:", error);
+        sendJson(response, 500, { error: error.message || "Payment records could not be cleared." });
+      }
+    } else if (request.method === "GET" && paymentQrMatch) {
       const eventId = decodeURIComponent(paymentQrMatch[1]);
       if (!eventId.trim()) {
         sendJson(response, 400, { error: "A valid event id is required to generate a payment QR." });
@@ -316,7 +356,7 @@ const server = http.createServer(async (request, response) => {
       sendJson(response, 200, await readEvents());
     } else if (request.method === "POST" && url.pathname.startsWith("/api/event-qr/")) {
       const eventId = decodeURIComponent(url.pathname.slice("/api/event-qr/".length));
-      if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,99}$/.test(eventId)) {
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9_\-\.]{0,99}$/.test(eventId)) {
         throw new Error("A valid event id is required for the QR upload.");
       }
 
@@ -329,43 +369,62 @@ const server = http.createServer(async (request, response) => {
         throw new Error("QR images must be smaller than 5 MB.");
       }
 
-      const format = match[1];
-      const validSignature = format === "png"
-        ? image.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
-        : format === "jpeg"
-          ? image[0] === 0xff && image[1] === 0xd8 && image[image.length - 2] === 0xff && image[image.length - 1] === 0xd9
-          : image.toString("ascii", 0, 4) === "RIFF" && image.toString("ascii", 8, 12) === "WEBP";
-      if (!validSignature) throw new Error("The uploaded file is not a valid image of the declared type.");
-
-      const extension = format === "jpeg" ? "jpg" : format;
-      const qrFile = path.join(EVENT_QR_DIR, `${eventId}.${extension}`);
-      await fs.promises.mkdir(EVENT_QR_DIR, { recursive: true });
-      await fs.promises.writeFile(qrFile, image);
-      sendJson(response, 201, { qrCode: `uploads/event-qr/${eventId}.${extension}` });
+      await Event.updateOne(
+        { id: eventId },
+        { $set: { qrCode: dataUrl } }
+      );
+      sendJson(response, 201, { qrCode: dataUrl });
     } else if (request.method === "GET" && url.pathname === "/api/registrations") {
-      sendJson(response, 200, await readWorkbookData(WORKBOOKS.registrations, "Registrations"));
+      const records = await Registration.find({}, { _id: 0, createdAt: 0, updatedAt: 0 }).lean();
+      sendJson(response, 200, records);
     } else if (request.method === "GET" && url.pathname === "/api/registrations/download") {
-      await sendWorkbookDownload(response, WORKBOOKS.registrations, "registrations.xlsx", "registrations");
+      const records = await Registration.find({}, { _id: 0, createdAt: 0, updatedAt: 0 }).lean();
+      const buffer = await generateExcelBuffer("Registrations", REGISTRATION_FIELDS, records);
+      response.writeHead(200, {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": 'attachment; filename="registrations.xlsx"',
+        "Content-Length": buffer.length,
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff"
+      });
+      response.end(buffer);
     } else if (request.method === "POST" && url.pathname === "/api/registrations") {
       const record = await readJson(request);
       if (!record.referenceId) throw new Error("Registration referenceId is required.");
       if (!record.eventId) throw new Error("Registration eventId is required.");
-      const events = await readEvents();
-      const event = [...events.technical, ...events.nonTechnical].find((item) => String(item.id) === String(record.eventId));
+      const event = await Event.findOne({ id: record.eventId }).lean();
       if (!event) throw new Error("The selected event could not be found.");
       if (String(event.status || "Open").trim().toLowerCase() === "closed") {
         throw new Error("Registration for this event is closed.");
       }
-      await appendRecord(WORKBOOKS.registrations, "Registrations", REGISTRATION_FIELDS, record, "referenceId");
+      await Registration.updateOne(
+        { referenceId: String(record.referenceId) },
+        { $set: record },
+        { upsert: true }
+      );
       sendJson(response, 201, { success: true });
     } else if (request.method === "GET" && url.pathname === "/api/payments") {
-      sendJson(response, 200, await readWorkbookData(WORKBOOKS.payments, "Payments"));
+      const records = await Payment.find({}, { _id: 0, createdAt: 0, updatedAt: 0 }).lean();
+      sendJson(response, 200, records);
     } else if (request.method === "GET" && url.pathname === "/api/payments/download") {
-      await sendWorkbookDownload(response, WORKBOOKS.payments, "payments.xlsx", "payments");
+      const records = await Payment.find({}, { _id: 0, createdAt: 0, updatedAt: 0 }).lean();
+      const buffer = await generateExcelBuffer("Payments", PAYMENT_FIELDS, records);
+      response.writeHead(200, {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": 'attachment; filename="payments.xlsx"',
+        "Content-Length": buffer.length,
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff"
+      });
+      response.end(buffer);
     } else if (request.method === "POST" && url.pathname === "/api/payments") {
       const record = await readJson(request);
       if (!record.referenceId) throw new Error("Payment referenceId is required.");
-      await appendRecord(WORKBOOKS.payments, "Payments", PAYMENT_FIELDS, record, "referenceId");
+      await Payment.updateOne(
+        { referenceId: String(record.referenceId) },
+        { $set: record },
+        { upsert: true }
+      );
       sendJson(response, 201, { success: true });
     } else if (url.pathname.startsWith("/api/")) {
       sendJson(response, 404, { error: "API route not found." });

@@ -34,7 +34,7 @@ npm install
 npm start
 ```
 
-Configure `MONGODB_URI` in `.env` before starting the server. Then open http://127.0.0.1:8000 in the browser. The server creates missing registration and payment workbook files in `data/` on first start and leaves existing workbooks unchanged.
+Configure `MONGODB_URI` in `.env` before starting the server. Set `ADMIN_USERNAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` there as well for the Admin Dashboard; when these are unset, the existing demo credentials remain available for local development only. Then open http://127.0.0.1:8000 in the browser. The server creates missing registration and payment workbook files in `data/` on first start and leaves existing workbooks unchanged.
 
 ## Notes
 
@@ -43,6 +43,7 @@ Configure `MONGODB_URI` in `.env` before starting the server. Then open http://1
 - MongoDB stores events in the `events` collection through the `Event` model in `models/Event.js`. The existing event `id` is unique and remains the event identifier.
 - `data/registrations.xlsx` and `data/payments.xlsx` start with headers only and receive records submitted through the site.
 - The Node.js server reads and updates events in MongoDB. Registration and payment records continue to use their existing workbook storage. The server listens on `127.0.0.1` by default.
+- The Admin Dashboard's Clear Payment Records action requires server-verified credentials and a separate confirmation. Before clearing payment rows, the server backs up `data/payments.xlsx` under `data/backups/` and retains the Payments sheet and its 15 headers.
 
 ## Event migration
 

@@ -135,7 +135,12 @@
               </div>
 
               <div class="dashboard-section">
-                <div class="section-heading"><h2>Payment Management</h2></div>
+                <div class="section-heading">
+                  <h2>Payment Management</h2>
+                  <div class="controls">
+                    <button id="clear-payments-btn" class="btn btn--danger" type="button">Clear Payment Records</button>
+                  </div>
+                </div>
                 <div class="form-card list-scroll">
                   <table class="table" id="payments-table">
                     <thead><tr><th>Reference</th><th>Participant</th><th>Event</th><th>Amount</th><th>Txn ID</th><th>Status</th></tr></thead>
@@ -169,6 +174,26 @@
           </div>
         </div>
       </section>
+
+      <dialog id="clear-records-dialog" class="clear-records-dialog" aria-labelledby="clear-records-title">
+        <form id="clear-records-form" class="clear-records-dialog__content" novalidate>
+          <h2 id="clear-records-title">Admin Verification</h2>
+          <p id="clear-records-description">Enter your admin credentials to continue.</p>
+          <div class="form-field">
+            <label for="clear-records-username">Admin Username or Email</label>
+            <input id="clear-records-username" name="username" type="text" autocomplete="username" required>
+          </div>
+          <div class="form-field">
+            <label for="clear-records-password">Admin Password</label>
+            <input id="clear-records-password" name="password" type="password" autocomplete="current-password" required>
+          </div>
+          <div id="clear-records-error" class="message-box error-box" role="alert" aria-live="assertive" hidden></div>
+          <div class="clear-records-dialog__actions">
+            <button id="cancel-clear-records" class="btn btn--ghost" type="button">Cancel</button>
+            <button id="verify-clear-records" class="btn btn--primary" type="submit">Verify and Continue</button>
+          </div>
+        </form>
+      </dialog>
 
       <!-- Edit/Add modal (simple) -->
       <div id="event-modal" class="event-modal" style="display:none;">
@@ -236,6 +261,7 @@
     <script src="../data/college.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/mouse-trail.js"></script>
-    <script src="../js/admin-dashboard.js?v=workbook-downloads-v1"></script>
+    <script src="../js/admin-record-clearing.js?v=admin-record-clearing-v1"></script>
+    <script src="../js/admin-dashboard.js?v=admin-record-clearing-v1"></script>
   </body>
 </html>

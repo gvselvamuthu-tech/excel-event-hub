@@ -16,9 +16,17 @@ document.addEventListener('DOMContentLoaded', function () {
   const refreshWorkbookBtn = document.getElementById('refresh-workbook-data');
   const downloadRegistrationsBtn = document.getElementById('downloadRegistrationsBtn');
   const downloadPaymentsBtn = document.getElementById('downloadPaymentsBtn');
+  const clearPaymentsBtn = document.getElementById('clear-payments-btn');
+  const clearRecordsDialog = document.getElementById('clear-records-dialog');
+  const clearRecordsForm = document.getElementById('clear-records-form');
+  const clearRecordsError = document.getElementById('clear-records-error');
+  const clearRecordsDescription = document.getElementById('clear-records-description');
+  const cancelClearRecordsBtn = document.getElementById('cancel-clear-records');
+  const verifyClearRecordsBtn = document.getElementById('verify-clear-records');
   const exportBtn = document.getElementById('export-data');
 
   let eventsData = { technical: [], nonTechnical: [] };
+  let datasetToClear = '';
 
   const eventsTableBody = document.querySelector('#events-table tbody');
   const registrationsTableBody = document.querySelector('#registrations-table tbody');
@@ -161,6 +169,88 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const downloadRegistrations = () => downloadWorkbook('registrations/download', 'registrations.xlsx', 'Registrations');
   const downloadPayments = () => downloadWorkbook('payments/download', 'payments.xlsx', 'Payments');
+
+  function openClearRecordsDialog(dataset) {
+    datasetToClear = dataset;
+    clearRecordsForm.reset();
+    clearRecordsError.hidden = true;
+    clearRecordsError.classList.remove('is-visible');
+    clearRecordsError.textContent = '';
+    clearRecordsDescription.textContent = 'Enter your admin credentials to continue.';
+    clearRecordsDialog.showModal();
+    clearRecordsForm.elements.namedItem('username').focus();
+  }
+
+  function closeClearRecordsDialog() {
+    clearRecordsDialog.close();
+    clearRecordsForm.reset();
+    clearRecordsError.hidden = true;
+    clearRecordsError.classList.remove('is-visible');
+    clearRecordsError.textContent = '';
+    datasetToClear = '';
+  }
+
+  async function sendClearRecordsRequest(path, payload) {
+    const response = await fetch(`/api${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || `Request failed (${response.status}).`);
+    return result;
+  }
+
+  clearPaymentsBtn.addEventListener('click', () => openClearRecordsDialog('payments'));
+  cancelClearRecordsBtn.addEventListener('click', closeClearRecordsDialog);
+  clearRecordsDialog.addEventListener('click', (event) => {
+    if (event.target === clearRecordsDialog) closeClearRecordsDialog();
+  });
+  clearRecordsDialog.addEventListener('close', () => {
+    clearRecordsForm.reset();
+    clearRecordsError.hidden = true;
+    clearRecordsError.classList.remove('is-visible');
+    clearRecordsError.textContent = '';
+    datasetToClear = '';
+  });
+  clearRecordsForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearRecordsError.hidden = true;
+    clearRecordsError.classList.remove('is-visible');
+    verifyClearRecordsBtn.disabled = true;
+    const credentials = {
+      username: clearRecordsForm.elements.namedItem('username').value.trim(),
+      password: clearRecordsForm.elements.namedItem('password').value
+    };
+    const dataset = datasetToClear;
+
+    try {
+      const result = await window.verifyAndClearAdminRecords(
+        dataset,
+        credentials,
+        (message) => window.confirm(message),
+        sendClearRecordsRequest
+      );
+      if (result.cancelled) {
+        closeClearRecordsDialog();
+        return;
+      }
+
+      closeClearRecordsDialog();
+      await loadWorkbookData();
+      showToast(result.message || 'All payment records cleared successfully.', 7000);
+    } catch (error) {
+      clearRecordsError.textContent = error.message === 'Invalid admin credentials'
+        ? error.message
+        : error.message || 'Payment records could not be cleared.';
+      clearRecordsError.hidden = false;
+      clearRecordsError.classList.add('is-visible');
+      clearRecordsForm.elements.namedItem('password').value = '';
+      clearRecordsForm.elements.namedItem('password').focus();
+    } finally {
+      verifyClearRecordsBtn.disabled = false;
+    }
+  });
 
   function showToast(message, timeout = 3000) {
     try {

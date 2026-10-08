@@ -5,13 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const toggle = document.getElementById('toggle-password');
   const messageBox = document.getElementById('login-message');
 
-  // Simple admin credential (for demo/testing only)
-  const ADMIN = {
-    username: 'admin',
-    email: 'admin@excel.edu',
-    password: 'Admin@123'
-  };
-
   function showMessage(text, type) {
     messageBox.style.display = 'block';
     messageBox.textContent = text;
@@ -28,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
     password.type = toggle.checked ? 'text' : 'password';
   });
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
     clearMessage();
 
@@ -50,10 +43,20 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const matchesIdentity = (idVal.toLowerCase() === ADMIN.email.toLowerCase()) || (idVal === ADMIN.username);
-    const valid = matchesIdentity && pwdVal === ADMIN.password;
-
-    if (!valid) {
+    let response;
+    let result;
+    try {
+      response = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: idVal, password: pwdVal })
+      });
+      result = await response.json();
+    } catch (error) {
+      showMessage(`Admin verification failed. ${error.message || 'Please try again.'}`, 'error');
+      return;
+    }
+    if (!response.ok) {
       showMessage('Invalid admin credentials. Please try again.', 'error');
       return;
     }
