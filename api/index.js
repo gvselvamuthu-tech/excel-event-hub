@@ -103,22 +103,20 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const incomingUrl = req.headers["x-now-route-matches"]
-      ? new URL(req.url, "http://localhost").searchParams.get("1")
-      : null;
-
-    let pathname = "";
-    if (incomingUrl) {
-      pathname = "/api/" + incomingUrl.replace(/^\/+/, "");
+    const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
+    const url = new URL(matchedPath, "http://localhost");
+    let pathname = url.pathname;
+    
+    // Normalize path if running behind rewrites
+    if (pathname.startsWith("/api/")) {
+      // standard path
+    } else if (req.query && req.query.path) {
+      pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
     } else {
-      const parsedUrl = new URL(req.url || "/", "http://localhost");
-      pathname = parsedUrl.pathname;
-    }
-
-    // Clean up .js or trailing slash
-    pathname = pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
-    if (pathname === "/api/index") {
-      pathname = "/api";
+      const directUrl = new URL(req.url, "http://localhost");
+      if (directUrl.pathname.startsWith("/api/")) {
+        pathname = directUrl.pathname;
+      }
     }
 
     const method = req.method ? req.method.toUpperCase() : "GET";
@@ -280,15 +278,7 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    return sendJson(res, 404, {
-      error: "API route not found.",
-      debug: {
-        rawUrl: req.url,
-        parsedPathname: pathname,
-        method,
-        query: req.query
-      }
-    });
+    return sendJson(res, 404, { error: "API route not found." });
   } catch (error) {
     console.error("API Error:", error);
     return sendJson(res, error.statusCode || 400, { error: error.message || "Request failed." });
