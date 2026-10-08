@@ -103,15 +103,17 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const rawPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
-    const url = new URL(rawPath, "http://localhost");
+    const rawUrl = req.url || "/";
+    const url = new URL(rawUrl, "http://localhost");
     let pathname = url.pathname;
-    
-    // Normalize path if running behind rewrites
-    if (pathname.startsWith("/api/")) {
-      // standard path
-    } else if (req.query && req.query.path) {
-      pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
+
+    // Remove .js extension if Vercel invoked the function filename directly
+    if (pathname.endsWith(".js")) {
+      pathname = pathname.slice(0, -3);
+    }
+
+    if (pathname === "/api/index") {
+      pathname = "/api";
     }
 
     const method = req.method ? req.method.toUpperCase() : "GET";
