@@ -272,7 +272,15 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    return sendJson(res, 404, { error: "API route not found." });
+    return sendJson(res, 404, {
+      error: "API route not found.",
+      debug: {
+        rawUrl: req.url,
+        parsedPathname: pathname,
+        method,
+        query: req.query
+      }
+    });
   } catch (error) {
     console.error("API Error:", error);
     return sendJson(res, error.statusCode || 400, { error: error.message || "Request failed." });
