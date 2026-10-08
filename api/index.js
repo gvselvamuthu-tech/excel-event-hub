@@ -105,7 +105,7 @@ module.exports = async function handler(req, res) {
 
     const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
     const url = new URL(matchedPath, "http://localhost");
-    let pathname = url.pathname;
+    let pathname = url.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
     
     // Normalize path if running behind rewrites
     if (pathname.startsWith("/api/")) {
@@ -115,7 +115,7 @@ module.exports = async function handler(req, res) {
     } else {
       const directUrl = new URL(req.url, "http://localhost");
       if (directUrl.pathname.startsWith("/api/")) {
-        pathname = directUrl.pathname;
+        pathname = directUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
       }
     }
 
