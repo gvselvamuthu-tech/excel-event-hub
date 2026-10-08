@@ -103,15 +103,20 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const rawUrl = req.url || "/";
-    const url = new URL(rawUrl, "http://localhost");
-    let pathname = url.pathname;
+    const incomingUrl = req.headers["x-now-route-matches"]
+      ? new URL(req.url, "http://localhost").searchParams.get("1")
+      : null;
 
-    // Remove .js extension if Vercel invoked the function filename directly
-    if (pathname.endsWith(".js")) {
-      pathname = pathname.slice(0, -3);
+    let pathname = "";
+    if (incomingUrl) {
+      pathname = "/api/" + incomingUrl.replace(/^\/+/, "");
+    } else {
+      const parsedUrl = new URL(req.url || "/", "http://localhost");
+      pathname = parsedUrl.pathname;
     }
 
+    // Clean up .js or trailing slash
+    pathname = pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
     if (pathname === "/api/index") {
       pathname = "/api";
     }

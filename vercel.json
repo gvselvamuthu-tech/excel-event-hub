@@ -2,36 +2,8 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/admin/verify",
-      "destination": "/api/admin/verify.js"
-    },
-    {
-      "source": "/api/events/:eventId/payment-qr",
-      "destination": "/api/events/payment-qr.js?eventId=:eventId"
-    },
-    {
-      "source": "/api/events",
-      "destination": "/api/events.js"
-    },
-    {
-      "source": "/api/registrations/download",
-      "destination": "/api/registrations/download.js"
-    },
-    {
-      "source": "/api/registrations",
-      "destination": "/api/registrations.js"
-    },
-    {
-      "source": "/api/payments/download",
-      "destination": "/api/payments/download.js"
-    },
-    {
-      "source": "/api/payments/clear",
-      "destination": "/api/payments/clear.js"
-    },
-    {
-      "source": "/api/payments",
-      "destination": "/api/payments.js"
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
     },
     {
       "source": "/data/(.*)",
