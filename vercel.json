@@ -2,7 +2,23 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/api/events/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/event-qr/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/admin/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/payments/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/api/registrations/(.*)",
       "destination": "/api/index.js"
     },
     {
@@ -12,10 +28,6 @@
     {
       "source": "/pages/(.*)",
       "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/public/$1"
     }
   ]
 }
