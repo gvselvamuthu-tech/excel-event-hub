@@ -6,18 +6,6 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/api/admin/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/api/payments/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/api/registrations/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
       "source": "/data/(.*)",
       "destination": "/data/$1"
     },
