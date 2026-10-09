@@ -110,13 +110,20 @@ module.exports = async function handler(req, res) {
     if (directPath.startsWith("/api/") && directPath !== "/api/index") {
       pathname = directPath;
     } else {
-      const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
-      const matchedUrl = new URL(matchedPath, "http://localhost");
-      const matchedNormalized = matchedUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
+      const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || "";
+      let matchedNormalized = "";
+      if (matchedPath) {
+        const matchedUrl = new URL(matchedPath, "http://localhost");
+        matchedNormalized = matchedUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
+      }
+
       if (matchedNormalized.startsWith("/api/") && matchedNormalized !== "/api/index") {
         pathname = matchedNormalized;
       } else if (req.query && req.query.path) {
         pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
+      } else if (req.query && req.query.eventId) {
+        const eventId = Array.isArray(req.query.eventId) ? req.query.eventId[0] : req.query.eventId;
+        pathname = `/api/events/${encodeURIComponent(eventId)}/payment-qr`;
       } else {
         pathname = directPath;
       }

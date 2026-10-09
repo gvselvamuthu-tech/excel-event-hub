@@ -2,10 +2,6 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/api/events/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
       "source": "/api/event-qr/(.*)",
       "destination": "/api/index.js"
     },
