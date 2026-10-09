@@ -103,19 +103,22 @@ module.exports = async function handler(req, res) {
   try {
     await connectToDatabase();
 
-    const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
-    const url = new URL(matchedPath, "http://localhost");
-    let pathname = url.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
-    
-    // Normalize path if running behind rewrites
-    if (pathname.startsWith("/api/")) {
-      // standard path
-    } else if (req.query && req.query.path) {
-      pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
+    let pathname = "";
+    const directUrl = new URL(req.url || "/", "http://localhost");
+    const directPath = directUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
+
+    if (directPath.startsWith("/api/") && directPath !== "/api/index") {
+      pathname = directPath;
     } else {
-      const directUrl = new URL(req.url, "http://localhost");
-      if (directUrl.pathname.startsWith("/api/")) {
-        pathname = directUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
+      const matchedPath = req.headers["x-matched-path"] || req.headers["x-invoke-path"] || req.url;
+      const matchedUrl = new URL(matchedPath, "http://localhost");
+      const matchedNormalized = matchedUrl.pathname.replace(/\.js$/i, "").replace(/\/+$/, "") || "/";
+      if (matchedNormalized.startsWith("/api/") && matchedNormalized !== "/api/index") {
+        pathname = matchedNormalized;
+      } else if (req.query && req.query.path) {
+        pathname = "/api/" + (Array.isArray(req.query.path) ? req.query.path.join("/") : req.query.path);
+      } else {
+        pathname = directPath;
       }
     }
 
