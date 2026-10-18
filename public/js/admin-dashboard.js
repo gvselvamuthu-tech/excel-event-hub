@@ -706,60 +706,68 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  document.getElementById('add-event-btn').addEventListener('click', openAddEvent);
-  document.getElementById('cancel-modal').addEventListener('click', () => { setModalVisible(false); });
+  const addEventBtn = document.getElementById('add-event-btn');
+  if (addEventBtn) addEventBtn.addEventListener('click', openAddEvent);
+  const cancelModalBtn = document.getElementById('cancel-modal');
+  if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => { setModalVisible(false); });
 
-  eventModal.addEventListener('click', (event) => {
-    if (event.target === eventModal) {
-      setModalVisible(false);
-    }
-  });
+  if (eventModal) {
+    eventModal.addEventListener('click', (event) => {
+      if (event.target === eventModal) {
+        setModalVisible(false);
+      }
+    });
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && eventModal && eventModal.style.display !== 'none') {
-      setModalVisible(false);
-    }
-  });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && eventModal && eventModal.style.display !== 'none') {
+        setModalVisible(false);
+      }
+    });
 
-  eventModal.addEventListener('wheel', (event) => {
-    const dialog = eventModal.querySelector('.event-modal__content');
-    const atTop = dialog.scrollTop <= 0 && event.deltaY < 0;
-    const atBottom = dialog.scrollTop + dialog.clientHeight >= dialog.scrollHeight && event.deltaY > 0;
-    if (atTop || atBottom) {
-      event.preventDefault();
-    }
-  }, { passive: false });
+    eventModal.addEventListener('wheel', (event) => {
+      const dialog = eventModal.querySelector('.event-modal__content');
+      if (!dialog) return;
+      const atTop = dialog.scrollTop <= 0 && event.deltaY < 0;
+      const atBottom = dialog.scrollTop + dialog.clientHeight >= dialog.scrollHeight && event.deltaY > 0;
+      if (atTop || atBottom) {
+        event.preventDefault();
+      }
+    }, { passive: false });
 
-  eventModal.addEventListener('touchmove', (event) => {
-    const dialog = eventModal.querySelector('.event-modal__content');
-    const atTop = dialog.scrollTop <= 0 && event.touches[0].clientY < 0;
-    const atBottom = dialog.scrollTop + dialog.clientHeight >= dialog.scrollHeight && event.touches[0].clientY > 0;
-    if (atTop || atBottom) {
-      event.preventDefault();
-    }
-  }, { passive: false });
+    eventModal.addEventListener('touchmove', (event) => {
+      const dialog = eventModal.querySelector('.event-modal__content');
+      if (!dialog) return;
+      const atTop = dialog.scrollTop <= 0 && event.touches[0].clientY < 0;
+      const atBottom = dialog.scrollTop + dialog.clientHeight >= dialog.scrollHeight && event.touches[0].clientY > 0;
+      if (atTop || atBottom) {
+        event.preventDefault();
+      }
+    }, { passive: false });
+  }
 
-  regSearch.addEventListener('input', () => renderRegistrationTable());
-  regFilter.addEventListener('change', () => renderRegistrationTable());
-  regFilterPayment.addEventListener('change', () => renderRegistrationTable());
+  if (regSearch) regSearch.addEventListener('input', () => renderRegistrationTable());
+  if (regFilter) regFilter.addEventListener('change', () => renderRegistrationTable());
+  if (regFilterPayment) regFilterPayment.addEventListener('change', () => renderRegistrationTable());
 
-  refreshBtn.addEventListener('click', loadWorkbookData);
-  refreshWorkbookBtn.addEventListener('click', loadWorkbookData);
-  downloadRegistrationsBtn.addEventListener('click', downloadRegistrations);
-  downloadPaymentsBtn.addEventListener('click', downloadPayments);
+  if (refreshBtn) refreshBtn.addEventListener('click', loadWorkbookData);
+  if (refreshWorkbookBtn) refreshWorkbookBtn.addEventListener('click', loadWorkbookData);
+  if (downloadRegistrationsBtn) downloadRegistrationsBtn.addEventListener('click', downloadRegistrations);
+  if (downloadPaymentsBtn) downloadPaymentsBtn.addEventListener('click', downloadPayments);
 
-  exportBtn.addEventListener('click', function () {
-    const payload = {
-      events: eventsData,
-      registration: (function () { try { return JSON.parse(localStorage.getItem('excelEventRegistration') || 'null'); } catch (e) { return null; } })(),
-      payment: (function () { try { return JSON.parse(localStorage.getItem('excelEventPayment') || 'null'); } catch (e) { return null; } })(),
-      registrations: dashboardState.registrations,
-      payments: dashboardState.payments
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'excel-admin-data.json'; a.click(); URL.revokeObjectURL(url);
-  });
+  if (exportBtn) {
+    exportBtn.addEventListener('click', function () {
+      const payload = {
+        events: eventsData,
+        registration: (function () { try { return JSON.parse(localStorage.getItem('excelEventRegistration') || 'null'); } catch (e) { return null; } })(),
+        payment: (function () { try { return JSON.parse(localStorage.getItem('excelEventPayment') || 'null'); } catch (e) { return null; } })(),
+        registrations: dashboardState.registrations,
+        payments: dashboardState.payments
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'excel-admin-data.json'; a.click(); URL.revokeObjectURL(url);
+    });
+  }
 
   function doLogout() {
     if (!confirm('Are you sure you want to log out of the admin session?')) return;
@@ -771,7 +779,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.location.href = 'admin-login.html';
   }
 
-  logoutBtn.addEventListener('click', doLogout);
+  if (logoutBtn) logoutBtn.addEventListener('click', doLogout);
   // ==========================================
   // ADMIN SETTINGS MODAL INTERACTION LOGIC
   // ==========================================
