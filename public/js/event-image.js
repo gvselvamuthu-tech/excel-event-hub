@@ -12,7 +12,9 @@
     "treasure-hunt": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
     "dance": "https://images.unsplash.com/photo-1504609813442-a8924e83f76e?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
     "music": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
-    "short-film": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral"
+    "short-film": "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
+    "seminar": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
+    "EEC/IT/2026-27/AEP/ACTNO.8.": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral"
   };
 
   const toEventList = (value) => {
@@ -89,7 +91,10 @@
   window.resolveEventImage = (imagePath, eventId) => {
     const resolvedPath = imagePath || "";
     const isPlaceholder = !resolvedPath || resolvedPath.endsWith("event-placeholder.svg");
-    if (isPlaceholder && eventImageSources[eventId]) return eventImageSources[eventId];
+    if (isPlaceholder) {
+      if (eventId && eventImageSources[eventId]) return eventImageSources[eventId];
+      if (eventId && /\bseminar\b/i.test(String(eventId))) return eventImageSources["seminar"];
+    }
     if (!resolvedPath) return fallbackImage;
     if (resolvedPath.startsWith("http") || resolvedPath.startsWith("../") || resolvedPath.startsWith("./")) return resolvedPath;
     return window.location.pathname.includes("/pages/") ? `../${resolvedPath}` : resolvedPath;

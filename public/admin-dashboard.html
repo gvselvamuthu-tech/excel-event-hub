@@ -27,158 +27,786 @@
     </script>
   </head>
   <body class="admin-dashboard">
-    <header class="site-header">
-      <div class="container navbar">
-        <div class="brand">
-          <div class="brand-mark">E</div>
-          <div>
-            <p class="brand-text" data-college-name>Excel Engineering College</p>
-            <p class="brand-subtext">Event Hub — Admin</p>
+    <div class="dashboard-layout-wrapper">
+      <!-- Main Dashboard Left Navigation Sidebar -->
+      <aside class="dashboard-sidebar" id="dashboard-main-sidebar" aria-label="Dashboard navigation">
+        <div class="dashboard-sidebar-header">
+          <div class="dashboard-sidebar-brand">
+            <div class="dashboard-brand-icon">E</div>
+            <div class="dashboard-brand-text-wrap">
+              <span class="dashboard-brand-title" data-website-name>Excel Event Hub</span>
+              <span class="dashboard-brand-subtitle">Event Management</span>
+            </div>
           </div>
         </div>
-        <nav class="main-nav" aria-label="Main navigation">
-          <a href="../index.html">Home</a>
-          <a href="events.html">Events</a>
-          <a href="admin-login.html" aria-current="page">Admin</a>
-        </nav>
-      </div>
-    </header>
 
-    <main>
-      <section class="page-hero">
-        <div class="container page-header">
-          <span class="tag">Admin Dashboard</span>
-          <h1>Control panel</h1>
+        <nav class="dashboard-sidebar-nav" aria-label="Dashboard main menu">
+          <button type="button" class="dash-nav-item active" data-section="dashboard" id="dash-nav-dashboard">
+            <span class="dash-nav-icon">📊</span>
+            <span class="dash-nav-label">Dashboard</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="profile" id="dash-nav-profile">
+            <span class="dash-nav-icon">👤</span>
+            <span class="dash-nav-label">Profile Settings</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="screen" id="dash-nav-screen">
+            <span class="dash-nav-icon">🖥️</span>
+            <span class="dash-nav-label">Screen Settings</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="user-mgmt" id="dash-nav-user-mgmt">
+            <span class="dash-nav-icon">👥</span>
+            <span class="dash-nav-label">User Management</span>
+          </button>
+          <button type="button" class="dash-nav-item sub-item" data-section="permissions-sub" id="dash-nav-permissions-sub">
+            <span class="dash-nav-icon">🛡️</span>
+            <span class="dash-nav-label">Permission Settings</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="events" id="dash-nav-events">
+            <span class="dash-nav-icon">📅</span>
+            <span class="dash-nav-label">Event Management</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="payment" id="dash-nav-payment">
+            <span class="dash-nav-icon">💳</span>
+            <span class="dash-nav-label">Payment Info</span>
+          </button>
+          <button type="button" class="dash-nav-item" data-section="permissions" id="dash-nav-permissions">
+            <span class="dash-nav-icon">🔐</span>
+            <span class="dash-nav-label">Permission Settings</span>
+          </button>
+          <button type="button" class="dash-nav-item dash-logout-item" data-action="logout" id="dash-nav-logout">
+            <span class="dash-nav-icon">🚪</span>
+            <span class="dash-nav-label">Logout</span>
+          </button>
+        </nav>
+
+        <div class="dashboard-sidebar-footer">
+          <div class="dashboard-user-card" id="dash-user-profile-summary">
+            <div class="dashboard-user-avatar" id="dash-sidebar-avatar">AD</div>
+            <div class="dashboard-user-info">
+              <span class="dashboard-user-name" id="dash-sidebar-admin-name">Administrator</span>
+              <span class="dashboard-user-role">Super Admin</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Dashboard Content Column -->
+      <div class="dashboard-main-area">
+        <header class="site-header">
+          <div class="container navbar">
+            <div class="brand">
+              <div>
+                <p class="brand-text" data-college-name>Excel Engineering College</p>
+                <p class="brand-subtext">Event Hub — Admin Dashboard</p>
+              </div>
+            </div>
+            <nav class="main-nav" aria-label="Main navigation">
+              <a href="../index.html">Home</a>
+              <a href="events.html">Events</a>
+              <a href="admin-login.html" aria-current="page">Admin</a>
+            </nav>
+          </div>
+        </header>
+
+        <main>
+          <section class="page-hero">
+            <div class="container page-header">
+              <span class="tag">Admin Dashboard</span>
+              <h1>Control panel</h1>
+            </div>
+          </section>
+
+          <section id="panel-dashboard" class="section dashboard-page-panel active" role="region" aria-labelledby="heading-dashboard">
+            <div class="container">
+              <div class="dashboard-grid">
+                <div class="stat-cards" id="overview-stats">
+                  <div class="stat-card">
+                    <strong id="stat-events">0</strong>
+                    <div class="small">Total Events</div>
+                  </div>
+                  <div class="stat-card">
+                    <strong id="stat-registrations">0</strong>
+                    <div class="small">Total Registrations</div>
+                  </div>
+                  <div class="stat-card">
+                    <strong id="stat-payments">0</strong>
+                    <div class="small">Total Payments</div>
+                  </div>
+                  <div class="stat-card">
+                    <strong id="stat-today">0</strong>
+                    <div class="small">Today's Registrations</div>
+                  </div>
+                </div>
+
+                <div class="dashboard-section" id="events-section">
+                  <div class="section-heading">
+                    <h2>Event Management</h2>
+                    <div class="controls">
+                      <button id="add-event-btn" class="btn btn--primary">Add Event</button>
+                    </div>
+                  </div>
+
+                  <div class="form-card list-scroll">
+                    <table class="table" id="events-table" aria-describedby="events-list">
+                      <thead>
+                        <tr><th>Title</th><th>Category</th><th>Fee</th><th>Actions</th></tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="dashboard-section" id="registrations-section">
+                  <div class="section-heading">
+                    <h2>Event Registration</h2>
+                    <div class="controls" style="flex-wrap: wrap;">
+                      <input id="reg-search" placeholder="Search name, reference, email, phone, txn" class="form-field" style="width:220px;" />
+                      <select id="reg-filter-event" class="form-field"><option value="all">All events</option></select>
+                      <select id="reg-filter-payment" class="form-field">
+                        <option value="all">All payment statuses</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="paid">Paid</option>
+                        <option value="pending">Pending</option>
+                      </select>
+                      <button id="refresh-workbook-data" class="btn btn--secondary" type="button">Refresh</button>
+                      <button id="downloadRegistrationsBtn" class="btn btn--primary" type="button">Download Registrations</button>
+                      <button id="downloadPaymentsBtn" class="btn btn--secondary" type="button">Download Payments</button>
+                      <button id="clear-records-btn" class="btn btn--danger" type="button">Clear Registration &amp; Payment Data</button>
+                    </div>
+                  </div>
+
+                  <div id="admin-dashboard-error" class="message-box error-box" role="alert" aria-live="assertive" style="display:none; margin-bottom: 1rem;"></div>
+
+                  <div class="form-card list-scroll">
+                    <table class="table" id="registrations-table">
+                      <thead>
+                        <tr>
+                          <th>Registration ID / Reference</th>
+                          <th>Participant Name</th>
+                          <th>Email</th>
+                          <th>Phone</th>
+                          <th>Department</th>
+                          <th>Year</th>
+                          <th>Event Name</th>
+                          <th>Registration Type</th>
+                          <th>Registration Date</th>
+                          <th>Amount</th>
+                          <th>Transaction ID</th>
+                          <th>Payment Status</th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+      <!-- Panel 2: Profile Settings Page -->
+      <section id="panel-profile" class="dashboard-page-panel" role="region" aria-labelledby="heading-profile" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-profile" class="dashboard-panel-title">Profile Settings</h2>
+              <p class="dashboard-panel-desc">Manage your administrator account credentials, contact info, and profile photo.</p>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <div class="profile-header-summary">
+              <div class="profile-avatar-container">
+                <div class="profile-avatar-circle" id="profile-avatar-preview">AD</div>
+                <label for="profile-photo-input" class="profile-avatar-upload-badge" title="Upload profile photo">
+                  📷
+                </label>
+                <input type="file" id="profile-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none;" />
+              </div>
+              <div class="profile-summary-text">
+                <h4 id="profile-card-name">Administrator</h4>
+                <p><span class="badge badge-primary">Head Mam/Sir</span> • <span id="profile-card-session-id">admin@excel.edu</span></p>
+              </div>
+            </div>
+
+            <form id="profile-settings-form" class="settings-form">
+              <div class="settings-form-grid">
+                <div class="settings-form-group">
+                  <label for="profile-display-name">Full Name</label>
+                  <input type="text" id="profile-display-name" name="displayName" class="settings-input" required placeholder="Administrator" />
+                </div>
+                <div class="settings-form-group">
+                  <label for="profile-username">Username</label>
+                  <input type="text" id="profile-username" name="username" class="settings-input" readonly />
+                  <span class="settings-help-text">Read-only (configured via server authentication).</span>
+                </div>
+                <div class="settings-form-group">
+                  <label for="profile-email">Email ID</label>
+                  <input type="email" id="profile-email" name="email" class="settings-input" required placeholder="admin@excel.edu" />
+                </div>
+                <div class="settings-form-group">
+                  <label for="profile-phone">Mobile Number</label>
+                  <input type="tel" id="profile-phone" name="phone" class="settings-input" placeholder="+91 98765 43210" pattern="[0-9+\-\s]{7,16}" />
+                </div>
+                <div class="settings-form-group full-width">
+                  <label for="profile-department">Department / Office</label>
+                  <input type="text" id="profile-department" name="department" class="settings-input" placeholder="Event Coordination Cell" />
+                </div>
+              </div>
+
+              <div class="settings-notice info">
+                <span class="notice-icon">ℹ️</span>
+                <p><strong>Administrator Notice:</strong> Profile updates persist to persistent storage. Authentication credentials (<span class="mono">ADMIN_USERNAME</span>, <span class="mono">ADMIN_PASSWORD</span>) remain securely enforced by the server environment.</p>
+              </div>
+
+              <div class="settings-actions">
+                <button type="submit" class="btn btn--primary">Save Changes</button>
+                <button type="button" class="btn btn--ghost" id="reset-profile-btn">Reset Defaults</button>
+              </div>
+            </form>
+          </div>
         </div>
       </section>
 
-      <section class="section">
+      <!-- Panel 3: Screen Settings Page -->
+      <section id="panel-screen" class="dashboard-page-panel" role="region" aria-labelledby="heading-screen" hidden>
         <div class="container">
-          <div class="dashboard-grid">
+          <div class="dashboard-panel-header">
             <div>
-              <div class="stat-cards" id="overview-stats">
-                <div class="stat-card">
-                  <strong id="stat-events">0</strong>
-                  <div class="small">Total Events</div>
-                </div>
-                <div class="stat-card">
-                  <strong id="stat-registrations">0</strong>
-                  <div class="small">Total Registrations</div>
-                </div>
-                <div class="stat-card">
-                  <strong id="stat-payments">0</strong>
-                  <div class="small">Total Payments</div>
-                </div>
-                <div class="stat-card">
-                  <strong id="stat-today">0</strong>
-                  <div class="small">Today's Registrations</div>
-                </div>
+              <h2 id="heading-screen" class="dashboard-panel-title">Screen Settings</h2>
+              <p class="dashboard-panel-desc">Customize website title, branding logo, theme mode, and primary accent colors.</p>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <h4>Website Branding & Appearance</h4>
+            <p class="settings-text-muted">Changes to website title and logo appear in the sidebar and relevant branding locations.</p>
+
+            <div class="settings-form-grid" style="margin-top:1rem;">
+              <div class="settings-form-group full-width">
+                <label for="screen-website-name">Website Name (Sidebar & Header Brand Text)</label>
+                <input type="text" id="screen-website-name" class="settings-input" placeholder="Excel Event Hub" value="Excel Event Hub" />
+                <span class="settings-help-text">Updates top-left sidebar brand and header titles across the application immediately upon saving.</span>
               </div>
 
-              <div class="dashboard-section">
-                <div class="section-heading">
-                  <h2>Event Management</h2>
-                  <div class="controls">
-                    <button id="add-event-btn" class="btn btn--primary">Add Event</button>
+              <div class="settings-form-group full-width">
+                <label>Website Logo</label>
+                <div class="logo-customizer-wrap">
+                  <div class="logo-preview-box" id="screen-logo-preview">
+                    <span class="brand-mark-preview" id="screen-logo-initial">E</span>
                   </div>
-                </div>
-
-                <div class="form-card list-scroll">
-                  <table class="table" id="events-table" aria-describedby="events-list">
-                    <thead>
-                      <tr><th>Title</th><th>Category</th><th>Fee</th><th>Actions</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="dashboard-section">
-                <div class="section-heading">
-                  <h2>Registration Management</h2>
-                  <div class="controls" style="flex-wrap: wrap;">
-                    <input id="reg-search" placeholder="Search name, reference, email, phone, txn" class="form-field" style="width:220px;" />
-                    <select id="reg-filter-event" class="form-field"><option value="all">All events</option></select>
-                    <select id="reg-filter-payment" class="form-field">
-                      <option value="all">All payment statuses</option>
-                      <option value="submitted">Submitted</option>
-                      <option value="paid">Paid</option>
-                      <option value="pending">Pending</option>
-                    </select>
-                    <button id="refresh-workbook-data" class="btn btn--secondary">Refresh</button>
-                    <button id="downloadRegistrationsBtn" class="btn btn--primary" type="button">Download Registrations</button>
-                    <button id="downloadPaymentsBtn" class="btn btn--secondary" type="button">Download Payments</button>
+                  <div class="logo-upload-controls">
+                    <input type="file" id="screen-logo-upload" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="settings-input" style="padding:0.35rem;" />
+                    <button type="button" class="btn btn--ghost" id="reset-logo-btn" style="font-size:0.8rem; padding:0.3rem 0.6rem;">Reset to Default Logo</button>
+                    <span class="settings-help-text">Max 2MB (PNG, SVG, JPEG, or WebP).</span>
                   </div>
-                </div>
-
-                <div id="admin-dashboard-error" class="message-box error-box" role="alert" aria-live="assertive" style="display:none; margin-bottom: 1rem;"></div>
-
-                <div class="form-card list-scroll">
-                  <table class="table" id="registrations-table">
-                    <thead>
-                      <tr>
-                        <th>Reference ID</th>
-                        <th>Event Name</th>
-                        <th>Participant Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Department</th>
-                        <th>Year</th>
-                        <th>Amount</th>
-                        <th>Transaction ID</th>
-                        <th>Registration Date</th>
-                      </tr>
-                    </thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-              </div>
-
-              <div class="dashboard-section">
-                <div class="section-heading">
-                  <h2>Payment Management</h2>
-                  <div class="controls">
-                    <button id="clear-payments-btn" class="btn btn--danger" type="button">Clear Payment Records</button>
-                  </div>
-                </div>
-                <div class="form-card list-scroll">
-                  <table class="table" id="payments-table">
-                    <thead><tr><th>Reference</th><th>Participant</th><th>Event</th><th>Amount</th><th>Txn ID</th><th>Status</th></tr></thead>
-                    <tbody></tbody>
-                  </table>
                 </div>
               </div>
             </div>
 
-            <aside class="admin-panel">
-              <div class="form-card">
-                <h3>Admin Controls</h3>
-                <div style="margin-top:0.8rem;">
-                  <button id="admin-logout" class="btn btn--ghost">Logout</button>
+            <div class="settings-field-block">
+              <label class="settings-block-label">Website Theme</label>
+              <div class="theme-options-grid">
+                <label class="theme-card-option">
+                  <input type="radio" name="screenTheme" value="dark" checked />
+                  <div class="theme-card-visual dark-theme-preview">
+                    <div class="preview-bar"></div>
+                    <div class="preview-box"></div>
+                  </div>
+                  <span class="theme-name">Dark Navy (Default)</span>
+                </label>
+                <label class="theme-card-option">
+                  <input type="radio" name="screenTheme" value="light" />
+                  <div class="theme-card-visual light-theme-preview">
+                    <div class="preview-bar"></div>
+                    <div class="preview-box"></div>
+                  </div>
+                  <span class="theme-name">Light Theme</span>
+                </label>
+                <label class="theme-card-option">
+                  <input type="radio" name="screenTheme" value="high-contrast" />
+                  <div class="theme-card-visual high-contrast-preview">
+                    <div class="preview-bar"></div>
+                    <div class="preview-box"></div>
+                  </div>
+                  <span class="theme-name">High Contrast Cyan</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-field-block">
+              <label class="settings-block-label" for="screen-primary-color">Primary Website Color</label>
+              <div class="color-picker-row">
+                <input type="color" id="screen-primary-color" value="#1e3a8a" class="color-picker-input" />
+                <input type="text" id="screen-primary-color-hex" value="#1e3a8a" class="settings-input color-hex-input" maxlength="7" />
+                <div class="color-palette-presets">
+                  <button type="button" class="color-preset-swatch" data-color="#1e3a8a" style="background:#1e3a8a;" title="Navy Blue (Default)"></button>
+                  <button type="button" class="color-preset-swatch" data-color="#2563eb" style="background:#2563eb;" title="Royal Blue"></button>
+                  <button type="button" class="color-preset-swatch" data-color="#0284c7" style="background:#0284c7;" title="Sky Blue"></button>
+                  <button type="button" class="color-preset-swatch" data-color="#059669" style="background:#059669;" title="Emerald Green"></button>
+                  <button type="button" class="color-preset-swatch" data-color="#7c3aed" style="background:#7c3aed;" title="Purple"></button>
                 </div>
               </div>
+              <span class="settings-help-text">Updates buttons, active navigation items, links, and UI accents consistently.</span>
+            </div>
 
-              <div class="form-card">
-                <h3>Quick Actions</h3>
-                <div style="display:grid;gap:0.6rem;margin-top:0.6rem;">
-                  <button id="refresh-data" class="btn btn--secondary">Refresh Data</button>
-                  <button id="export-data" class="btn btn--ghost">Export Local Data</button>
-                </div>
-              </div>
+            <div class="settings-field-block">
+              <label class="settings-block-label" for="screen-density-select">Table & Grid Density</label>
+              <select id="screen-density-select" class="settings-select">
+                <option value="comfortable">Comfortable (Standard spacing)</option>
+                <option value="compact">Compact (High data density)</option>
+                <option value="spacious">Spacious (Relaxed readability)</option>
+              </select>
+            </div>
 
-              <div class="form-card">
-                <h3>Recent Registrations</h3>
-                <ul id="recent-registrations-list" style="list-style:none; padding:0; margin:0.75rem 0 0; display:grid; gap:0.6rem;"></ul>
-              </div>
-            </aside>
+            <div class="settings-field-block">
+              <label class="settings-block-label">Animations & Effects</label>
+              <label class="checkbox-inline" style="color:var(--text-dark);">
+                <input type="checkbox" id="screen-mouse-trail-toggle" checked />
+                <span>Enable interactive cursor glow and mouse trail</span>
+              </label>
+            </div>
+
+            <div class="settings-actions">
+              <button type="button" class="btn btn--primary" id="save-screen-settings-btn">Save Screen Settings</button>
+            </div>
           </div>
         </div>
       </section>
 
-      <dialog id="clear-records-dialog" class="clear-records-dialog" aria-labelledby="clear-records-title">
+      <!-- Panel 4: User Management Page -->
+      <section id="panel-user-mgmt" class="dashboard-page-panel" role="region" aria-labelledby="heading-user-mgmt" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-user-mgmt" class="dashboard-panel-title">User Management</h2>
+              <p class="dashboard-panel-desc">Manage administrators, HODs, and student participants with role-based access.</p>
+            </div>
+            <div class="panel-header-actions">
+              <button type="button" class="btn btn--secondary" id="modal-refresh-users-btn">🔄 Refresh Users</button>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <!-- Role filtering & search -->
+            <div class="users-filter-bar">
+              <div class="filter-group">
+                <label for="users-role-filter">Filter Role:</label>
+                <select id="users-role-filter" class="settings-select" style="width:160px;">
+                  <option value="all">All Roles</option>
+                  <option value="Head Mam/Sir">Head Mam/Sir</option>
+                  <option value="HOD">HOD</option>
+                  <option value="Student">Student</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="users-search-input">Search:</label>
+                <input type="text" id="users-search-input" placeholder="Search name or email…" class="settings-input" style="width:200px;" />
+              </div>
+            </div>
+
+            <div class="settings-table-container">
+              <table class="settings-data-table" id="settings-users-table">
+                <thead>
+                  <tr>
+                    <th>User / Participant</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Access Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="6" class="text-center text-muted">Loading user records…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="settings-notice note" style="margin-top:1.25rem;">
+              <span class="notice-icon">🛡️</span>
+              <div>
+                <strong>Role Hierarchy Architecture:</strong>
+                <p><strong>1. Head Mam/Sir:</strong> Super administrator with full system authority.<br>
+                <strong>2. HOD:</strong> Department-level administrator restricted to authorized event registrations.<br>
+                <strong>3. Student:</strong> Public event viewing, online registration, and attendee status.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 5: Permission Settings (under User Management) -->
+      <section id="panel-permissions-sub" class="dashboard-page-panel" role="region" aria-labelledby="heading-permissions-sub" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-permissions-sub" class="dashboard-panel-title">Permission Settings</h2>
+              <p class="dashboard-panel-desc">Configure granular permissions for <strong>HOD</strong> and <strong>Student</strong> roles. Head Mam/Sir retains full administrative control.</p>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <div class="permission-matrix-wrap">
+              <table class="permission-matrix-table" id="permissions-matrix-table">
+                <thead>
+                  <tr>
+                    <th>Capability / Feature</th>
+                    <th class="text-center">Head Mam/Sir<br><small class="text-muted">(Full Admin)</small></th>
+                    <th class="text-center">HOD<br><small class="text-muted">(Department)</small></th>
+                    <th class="text-center">Student<br><small class="text-muted">(Participant)</small></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-perm="viewDashboard">
+                    <td><strong>View Dashboard</strong><br><small class="text-muted">Access dashboard overview and summary widgets</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled title="Always granted to Head Mam/Sir" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewDashboard" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewDashboard" /></td>
+                  </tr>
+                  <tr data-perm="viewEvents">
+                    <td><strong>View Events</strong><br><small class="text-muted">View live event catalog and schedule</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewEvents" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewEvents" checked /></td>
+                  </tr>
+                  <tr data-perm="addEvents">
+                    <td><strong>Add Events</strong><br><small class="text-muted">Create new technical and non-technical events</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="addEvents" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="addEvents" /></td>
+                  </tr>
+                  <tr data-perm="editEvents">
+                    <td><strong>Edit Events</strong><br><small class="text-muted">Modify dates, fees, descriptions, and venue info</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="editEvents" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="editEvents" /></td>
+                  </tr>
+                  <tr data-perm="deleteEvents">
+                    <td><strong>Delete Events</strong><br><small class="text-muted">Remove events from catalog</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="deleteEvents" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="deleteEvents" /></td>
+                  </tr>
+                  <tr data-perm="viewRegistrations">
+                    <td><strong>View Registrations</strong><br><small class="text-muted">View registration database records</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewRegistrations" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewRegistrations" /></td>
+                  </tr>
+                  <tr data-perm="viewRegistrationCounts">
+                    <td><strong>View Registration Counts</strong><br><small class="text-muted">View total attendee numbers per event</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewRegistrationCounts" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewRegistrationCounts" /></td>
+                  </tr>
+                  <tr data-perm="viewParticipantDetails">
+                    <td><strong>View Participant Details</strong><br><small class="text-muted">View student names, emails, and phone numbers</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewParticipantDetails" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewParticipantDetails" /></td>
+                  </tr>
+                  <tr data-perm="onlineRegistration">
+                    <td><strong>Online Registration</strong><br><small class="text-muted">Register for events online with reference ID</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="onlineRegistration" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="onlineRegistration" checked /></td>
+                  </tr>
+                  <tr data-perm="offlineRegistration">
+                    <td><strong>Offline Registration</strong><br><small class="text-muted">On-spot walk-in registration capabilities</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="offlineRegistration" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="offlineRegistration" /></td>
+                  </tr>
+                  <tr data-perm="viewPaymentInfo">
+                    <td><strong>View Payment Information</strong><br><small class="text-muted">View payment transactions and reconciliation</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewPaymentInfo" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewPaymentInfo" /></td>
+                  </tr>
+                  <tr data-perm="managePaymentQrs">
+                    <td><strong>Manage Payment QR Codes</strong><br><small class="text-muted">Add, edit, and assign custom UPI payment QRs</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="managePaymentQrs" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="managePaymentQrs" /></td>
+                  </tr>
+                  <tr data-perm="viewReports">
+                    <td><strong>View Reports & Downloads</strong><br><small class="text-muted">Export registrations and payment workbooks</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="viewReports" checked /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="viewReports" /></td>
+                  </tr>
+                  <tr data-perm="manageUsers">
+                    <td><strong>Manage Users</strong><br><small class="text-muted">Assign roles and manage user access permissions</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="manageUsers" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="manageUsers" /></td>
+                  </tr>
+                  <tr data-perm="manageBranding">
+                    <td><strong>Manage Website Branding & Screen Settings</strong><br><small class="text-muted">Customize website title, logo, and theme</small></td>
+                    <td class="text-center"><input type="checkbox" checked disabled /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="hod" data-perm="manageBranding" /></td>
+                    <td class="text-center"><input type="checkbox" class="perm-check" data-role="student" data-perm="manageBranding" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="settings-actions" style="margin-top:1.25rem;">
+              <button type="button" class="btn btn--primary" id="save-permissions-btn">Save Role Permissions</button>
+              <button type="button" class="btn btn--ghost" id="reset-permissions-btn">Reset Defaults</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 6: Event Management Page -->
+      <section id="panel-events" class="dashboard-page-panel" role="region" aria-labelledby="heading-events" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-events" class="dashboard-panel-title">Event Management</h2>
+              <p class="dashboard-panel-desc">Manage existing events without changing event IDs or losing data.</p>
+            </div>
+            <div class="panel-header-actions">
+              <button type="button" class="btn btn--primary" id="modal-add-event-btn">+ Add New Event</button>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <div class="settings-table-container">
+              <table class="settings-data-table" id="settings-events-table">
+                <thead>
+                  <tr>
+                    <th>Event ID</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Fee</th>
+                    <th>Assigned QR</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="7" class="text-center text-muted">Loading events…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="settings-text-muted small" style="margin-top:0.75rem;">
+              Note: Adding or editing an event updates MongoDB and immediately reflects on the public events catalog (<span class="mono">events.html</span>). Event IDs are preserved to protect existing registrations and payments.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 7: Payment Info Page -->
+      <section id="panel-payment" class="dashboard-page-panel" role="region" aria-labelledby="heading-payment" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-payment" class="dashboard-panel-title">Payment Info</h2>
+              <p class="dashboard-panel-desc">Save and manage multiple payment QR codes by name (e.g., QR 1, QR 2, QR 3) and assign them to specific events.</p>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <!-- Multiple QR Code Management Section -->
+            <div class="qr-mgmt-section">
+              <div class="panel-section-header">
+                <h5>Saved Payment QR Codes (<span id="saved-qrs-count">0</span>)</h5>
+                <button type="button" class="btn btn--primary" id="add-new-qr-btn" style="font-size:0.85rem; padding:0.35rem 0.75rem;">+ Add New QR Code</button>
+              </div>
+
+              <!-- Add / Edit QR Form (hidden by default) -->
+              <div id="qr-edit-form-wrap" class="qr-edit-card" style="display:none; margin-bottom:1.25rem;">
+                <h6 id="qr-form-title">Add Payment QR Code</h6>
+                <form id="payment-qr-form">
+                  <input type="hidden" id="qr-form-id" name="id" />
+                  <div class="settings-form-grid">
+                    <div class="settings-form-group">
+                      <label for="qr-form-name">QR Display Name *</label>
+                      <input type="text" id="qr-form-name" name="name" class="settings-input" placeholder="e.g., QR 1 (CSE Dept) or Main Campus QR" required />
+                    </div>
+                    <div class="settings-form-group">
+                      <label for="qr-form-provider">Provider / Account Label</label>
+                      <input type="text" id="qr-form-provider" name="provider" class="settings-input" placeholder="e.g., GooglePay / PhonePe / Axis Bank" />
+                    </div>
+                    <div class="settings-form-group full-width">
+                      <label for="qr-form-image">QR Image File *</label>
+                      <input type="file" id="qr-form-image" accept="image/png,image/jpeg,image/webp" class="settings-input" style="padding:0.35rem;" />
+                      <div class="qr-preview-box" id="qr-form-preview-box" style="display:none; margin-top:0.5rem;">
+                        <img id="qr-form-preview-img" src="" alt="QR Preview" style="max-height:140px; border-radius:6px; border:1px solid #cbd5e1;" />
+                      </div>
+                    </div>
+                    <div class="settings-form-group full-width">
+                      <label class="checkbox-inline" style="color:var(--text-dark);">
+                        <input type="checkbox" id="qr-form-active" checked />
+                        <span>Active (Available for event assignment)</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="settings-actions" style="margin-top:0.85rem;">
+                    <button type="submit" class="btn btn--primary" id="save-qr-btn">Save QR Code</button>
+                    <button type="button" class="btn btn--ghost" id="cancel-qr-form-btn">Cancel</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Grid of Saved QR Cards -->
+              <div class="saved-qrs-grid" id="saved-qrs-grid">
+                <div class="text-center text-muted" style="padding:1rem;">Loading saved payment QR codes…</div>
+              </div>
+            </div>
+
+            <!-- Gateway and Summary Stats -->
+            <div class="payment-info-cards-grid" style="margin-top:1.5rem;">
+              <div class="payment-stat-card">
+                <span class="payment-stat-label">Active UPI Payee ID</span>
+                <strong class="payment-stat-value mono" id="settings-upi-id">suba.arni@okaxis</strong>
+                <span class="small text-muted">Configured in payment-config.js</span>
+              </div>
+
+              <div class="payment-stat-card">
+                <span class="payment-stat-label">Payee Display Name</span>
+                <strong class="payment-stat-value" id="settings-payee-name">Excel Event Hub</strong>
+                <span class="small text-muted">Verified Merchant Tag</span>
+              </div>
+
+              <div class="payment-stat-card">
+                <span class="payment-stat-label">Total Payment Transactions</span>
+                <strong class="payment-stat-value" id="settings-total-payments">0</strong>
+                <span class="small text-muted">Recorded in MongoDB</span>
+              </div>
+            </div>
+
+            <div class="panel-section-header" style="margin-top:1.5rem;">
+              <h5>Recent Transaction Records</h5>
+              <button type="button" class="btn btn--secondary" id="modal-download-payments-btn" style="font-size:0.85rem; padding:0.4rem 0.75rem;">
+                📥 Download Excel
+              </button>
+            </div>
+
+            <div class="settings-table-container">
+              <table class="settings-data-table" id="settings-payments-table">
+                <thead>
+                  <tr>
+                    <th>Ref ID</th>
+                    <th>Participant</th>
+                    <th>Event</th>
+                    <th>Amount</th>
+                    <th>Transaction ID</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="6" class="text-center text-muted">Loading payments…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 8: Main Permission Settings Overview Page -->
+      <section id="panel-permissions" class="dashboard-page-panel" role="region" aria-labelledby="heading-permissions" hidden>
+        <div class="container">
+          <div class="dashboard-panel-header">
+            <div>
+              <h2 id="heading-permissions" class="dashboard-panel-title">Permission Settings</h2>
+              <p class="dashboard-panel-desc">Role-based access control and system authorization overview.</p>
+            </div>
+          </div>
+          <div class="settings-card-inner">
+            <h4>Role-Based Access Control Overview</h4>
+            <p class="settings-text-muted">Comprehensive review of role permissions for <strong>Head Mam/Sir</strong>, <strong>HOD</strong>, and <strong>Student</strong>.</p>
+
+            <div class="role-overview-cards-grid">
+              <div class="role-overview-card head-role">
+                <div class="role-overview-header">
+                  <span class="role-tag head">Role 1: Head Mam/Sir</span>
+                  <span class="badge badge-primary">Super Admin</span>
+                </div>
+                <p class="role-overview-desc">Highest-level administrator with unrestricted authority.</p>
+                <ul class="role-overview-features">
+                  <li>✅ Full access to all 15 system features</li>
+                  <li>✅ Add, edit, and delete events</li>
+                  <li>✅ Configure role-based permissions matrix</li>
+                  <li>✅ Manage and assign multiple payment QR codes</li>
+                  <li>✅ Clear payment records & export Excel workbooks</li>
+                  <li>✅ Customize website branding, name, logo, & colors</li>
+                </ul>
+              </div>
+
+              <div class="role-overview-card hod-role">
+                <div class="role-overview-header">
+                  <span class="role-tag hod">Role 2: HOD</span>
+                  <span class="badge badge-success">Department Access</span>
+                </div>
+                <p class="role-overview-desc">Department-level access configured and delegated by Head Mam/Sir.</p>
+                <ul class="role-overview-features">
+                  <li>✅ View permitted events and registration counts</li>
+                  <li>✅ View participant and attendee information</li>
+                  <li>✅ Access offline walk-in registration (when permitted)</li>
+                  <li>✅ View dashboard analytics summaries</li>
+                  <li>❌ Cannot modify payment QR codes or website branding</li>
+                  <li>❌ Cannot clear system payment transaction logs</li>
+                </ul>
+              </div>
+
+              <div class="role-overview-card student-role">
+                <div class="role-overview-header">
+                  <span class="role-tag student">Role 3: Student</span>
+                  <span class="badge badge-info">Participant</span>
+                </div>
+                <p class="role-overview-desc">Student-level access for event exploration and registration.</p>
+                <ul class="role-overview-features">
+                  <li>✅ Browse live technical and non-technical events</li>
+                  <li>✅ Register online for events</li>
+                  <li>✅ Access assigned payment QR code for registration</li>
+                  <li>✅ View personal registration details and reference IDs</li>
+                  <li>❌ Restricted from administrative dashboard and settings</li>
+                  <li>❌ Restricted from viewing private attendee lists</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="auth-security-grid" style="margin-top:1.5rem;">
+              <div class="security-card">
+                <div class="security-card-header">
+                  <span class="sec-icon">🔒</span>
+                  <div>
+                    <h6>Authentication Engine</h6>
+                    <span class="badge badge-success">Active</span>
+                  </div>
+                </div>
+                <p>Constant-time timing-safe credential verification (<span class="mono">crypto.timingSafeEqual</span>) prevents side-channel timing attacks.</p>
+              </div>
+
+              <div class="security-card">
+                <div class="security-card-header">
+                  <span class="sec-icon">🛡️</span>
+                  <div>
+                    <h6>Protected Endpoints</h6>
+                    <span class="badge badge-primary">Vercel & Express</span>
+                  </div>
+                </div>
+                <p>POST <span class="mono">/api/admin/verify</span>, POST <span class="mono">/api/payments/clear</span>, and <span class="mono">/api/payment-qrs</span> require authorization.</p>
+              </div>
+
+              <div class="security-card">
+                <div class="security-card-header">
+                  <span class="sec-icon">💾</span>
+                  <div>
+                    <h6>Settings Persistence</h6>
+                    <span class="badge badge-info">MongoDB & Local</span>
+                  </div>
+                </div>
+                <p>Branding, role permissions, and named QR configurations are stored via persistent AppSettings and PaymentQr models.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Clear Registration and Payment Records Dialog -->
+      <dialog id="clear-records-dialog" class="clear-records-dialog">
         <form id="clear-records-form" class="clear-records-dialog__content" novalidate>
-          <h2 id="clear-records-title">Admin Verification</h2>
-          <p id="clear-records-description">Enter your admin credentials to continue.</p>
+          <h2 id="clear-records-title">Clear Registration & Payment Records</h2>
+          <p id="clear-records-description">This action permanently deletes all registration and payment records. Events, QR codes, website settings, and admin accounts remain intact.</p>
           <div class="form-field">
             <label for="clear-records-username">Admin Username or Email</label>
             <input id="clear-records-username" name="username" type="text" autocomplete="username" required>
@@ -190,58 +818,23 @@
           <div id="clear-records-error" class="message-box error-box" role="alert" aria-live="assertive" hidden></div>
           <div class="clear-records-dialog__actions">
             <button id="cancel-clear-records" class="btn btn--ghost" type="button">Cancel</button>
-            <button id="verify-clear-records" class="btn btn--primary" type="submit">Verify and Continue</button>
+            <button id="verify-clear-records" class="btn btn--danger" type="submit">Confirm Clear</button>
           </div>
         </form>
       </dialog>
 
-      <!-- Edit/Add modal (simple) -->
-      <div id="event-modal" class="event-modal" style="display:none;">
-        <div class="event-modal__dialog">
-          <div class="form-card event-modal__content">
-            <h3 id="modal-title">Add Event</h3>
-            <form id="event-form">
-              <div class="form-row">
-                <div class="form-field"><label>Title</label><input name="title" required></div>
-                <div class="form-field"><label>Id (slug)</label><input name="id" required></div>
-              </div>
-              <div class="form-row">
-                <div class="form-field"><label>Category</label><select name="category"><option value="Technical">Technical</option><option value="Non-Technical">Non-Technical</option></select></div>
-                <div class="form-field"><label>Event Registration Status</label><select name="status"><option value="Open">OPEN</option><option value="Closed">CLOSED</option></select></div>
-              </div>
-              <div class="form-row">
-                <div class="form-field"><label>Date</label><input name="date" type="text" placeholder="12 Sep 2026"></div>
-                <div class="form-field"><label>Time</label><input name="time" type="text" placeholder="09:30 AM"></div>
-              </div>
-              <div class="form-row">
-                <div class="form-field"><label>Venue</label><input name="venue" type="text" placeholder="Innovation Lab"></div>
-                <div class="form-field"><label for="event-registration-fee">Registration Fee (₹)</label><input id="event-registration-fee" name="registrationFee" type="number" min="0" step="0.01" placeholder="150" required></div>
-              </div>
-              <div class="form-row">
-                <div class="form-field"><label>Registration Deadline</label><input name="registrationDeadline" type="text" placeholder="10 Sep 2026"></div>
-                <div class="form-field"><label>Image Path</label><input name="image" type="text" placeholder="assets/images/event-placeholder.svg"></div>
-              </div>
-              <div class="form-field checkbox-field">
-                <label class="checkbox-inline" for="scanner-enabled">
-                  <input id="scanner-enabled" name="scannerEnabled" type="checkbox">
-                  <span>Enable camera QR scanner for this event</span>
-                </label>
-              </div>
-              <div class="form-row">
-                <div class="form-field"><label>Team Size</label><input name="teamSize" type="text" placeholder="Individual or 2 Members"></div>
-                <div class="form-field"><label>Max Participants</label><input name="maxParticipants" type="number" min="1" step="1"></div>
-              </div>
-              <div class="form-field"><label>Short Description</label><input name="shortDescription"></div>
-              <div class="form-field"><label>Description</label><textarea name="description" rows="3"></textarea></div>
-              <div class="form-field"><label>Full Description</label><textarea name="fullDescription" rows="3"></textarea></div>
-              <div class="form-field"><label>Organizer Details</label><input name="organizer" type="text" placeholder="Event coordinator / club name"></div>
-              <div class="form-field"><label>Rules (one per line)</label><textarea name="rules" rows="3" placeholder="Rule 1&#10;Rule 2"></textarea></div>
-              <div class="form-field"><label>Prize List (one per line)</label><textarea name="prizes" rows="3" placeholder="₹5,000 + Trophy&#10;Certificate of Excellence"></textarea></div>
-              <div style="display:flex;gap:0.5rem;margin-top:0.75rem;"><button type="submit" class="btn btn--primary">Save</button><button type="button" id="cancel-modal" class="btn btn--ghost">Cancel</button></div>
-            </form>
+      <!-- Logout Confirmation Modal Dialog -->
+      <dialog id="logout-confirm-dialog" class="logout-dialog">
+        <div class="logout-dialog__content">
+          <div class="logout-dialog__icon">🚪</div>
+          <h3>Confirm Logout</h3>
+          <p>Are you sure you want to end your administrator session? You will be returned to the admin login page.</p>
+          <div class="logout-dialog__actions">
+            <button type="button" class="btn btn--ghost" id="logout-cancel-btn">Cancel</button>
+            <button type="button" class="btn btn--danger" id="logout-confirm-btn">Logout</button>
           </div>
         </div>
-      </div>
+      </dialog>
 
     </main>
 
@@ -257,11 +850,14 @@
         <p>© 2026 Excel Event Hub</p>
       </div>
     </footer>
+      </div><!-- /.dashboard-main-area -->
+    </div><!-- /.dashboard-layout-wrapper -->
 
     <script src="../data/college.js"></script>
     <script src="../js/app.js"></script>
     <script src="../js/mouse-trail.js"></script>
     <script src="../js/admin-record-clearing.js?v=admin-record-clearing-v1"></script>
-    <script src="../js/admin-dashboard.js?v=admin-record-clearing-v1"></script>
+    <script src="../js/admin-settings-modal.js?v=admin-settings-v1"></script>
+    <script src="../js/admin-dashboard.js?v=admin-settings-v1"></script>
   </body>
 </html>

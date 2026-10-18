@@ -3,6 +3,8 @@ const { connectToDatabase } = require("../lib/db");
 const Event = require("../models/Event");
 const Registration = require("../models/Registration");
 const Payment = require("../models/Payment");
+const PaymentQr = require("../models/PaymentQr");
+const AppSettings = require("../models/AppSettings");
 const { verifyAdminCredentials } = require("../lib/admin-credentials");
 const { normalizeLegacyRegistrationFee } = require("../lib/event-fees");
 const { parseRegistrationFee, buildEventUpiPaymentLink } = require("../public/js/payment-config");
@@ -161,13 +163,44 @@ module.exports = async function handler(req, res) {
       if (!eventId.trim()) {
         return sendJson(res, 400, { error: "A valid event id is required to generate a payment QR." });
       }
-      const event = await Event.findOne({ id: eventId }, { id: 1, title: 1, registrationFee: 1 }).lean();
+      const event = await Event.findOne({ id: eventId }, { id: 1, title: 1, registrationFee: 1, qrCode: 1, assignedQrId: 1 }).lean();
       if (!event) {
         return sendJson(res, 404, { error: "The selected event could not be found." });
       }
       if (parseRegistrationFee(event.registrationFee) === null) {
         throw new Error(`Event "${event.id}" has an invalid registration fee; its payment QR cannot be generated.`);
       }
+
+      // Check if this event has an assigned named QR code or direct custom QR dataUrl
+      let customQrBuffer = null;
+      let customQrContentType = "image/png";
+
+      if (event.assignedQrId) {
+        const namedQr = await PaymentQr.findOne({ id: String(event.assignedQrId), active: true }).lean();
+        if (namedQr && namedQr.dataUrl) {
+          const match = /^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/.exec(String(namedQr.dataUrl));
+          if (match) {
+            customQrContentType = `image/${match[1]}`;
+            customQrBuffer = Buffer.from(match[2], "base64");
+          }
+        }
+      }
+
+      if (!customQrBuffer && event.qrCode && event.qrCode.startsWith("data:image/")) {
+        const match = /^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/.exec(String(event.qrCode));
+        if (match) {
+          customQrContentType = `image/${match[1]}`;
+          customQrBuffer = Buffer.from(match[2], "base64");
+        }
+      }
+
+      if (customQrBuffer) {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", customQrContentType);
+        res.setHeader("Cache-Control", "no-store");
+        return res.end(customQrBuffer);
+      }
+
       const paymentUri = buildEventUpiPaymentLink(event);
       const qrImage = await QRCode.toBuffer(paymentUri, {
         type: "png",
@@ -179,6 +212,54 @@ module.exports = async function handler(req, res) {
       res.setHeader("Content-Type", "image/png");
       res.setHeader("Cache-Control", "no-store");
       return res.end(qrImage);
+    }
+
+    // 4b. Multiple Payment QRs (GET / POST / DELETE /api/payment-qrs)
+    if (method === "GET" && pathname === "/api/payment-qrs") {
+      const qrs = await PaymentQr.find({}, { _id: 0 }).sort({ createdAt: 1 }).lean();
+      return sendJson(res, 200, qrs);
+    }
+
+    if (method === "POST" && pathname === "/api/payment-qrs") {
+      const payload = await parseBody(req);
+      if (!payload.name || !String(payload.name).trim()) {
+        return sendJson(res, 400, { error: "QR name is required." });
+      }
+      if (!payload.dataUrl || !payload.dataUrl.startsWith("data:image/")) {
+        return sendJson(res, 400, { error: "A valid QR image (PNG, JPEG, WebP) is required." });
+      }
+      const qrId = payload.id && String(payload.id).trim() ? String(payload.id).trim() : `qr-${Date.now()}`;
+      const record = {
+        id: qrId,
+        name: String(payload.name).trim(),
+        provider: String(payload.provider || "UPI").trim(),
+        dataUrl: payload.dataUrl,
+        active: payload.active !== false,
+        isDefault: Boolean(payload.isDefault)
+      };
+      await PaymentQr.updateOne({ id: qrId }, { $set: record }, { upsert: true });
+      return sendJson(res, 200, { success: true, qr: record });
+    }
+
+    if (method === "DELETE" && pathname.startsWith("/api/payment-qrs/")) {
+      const qrId = decodeURIComponent(pathname.slice("/api/payment-qrs/".length));
+      await PaymentQr.deleteOne({ id: qrId });
+      await Event.updateMany({ assignedQrId: qrId }, { $unset: { assignedQrId: 1 } });
+      return sendJson(res, 200, { success: true, deletedId: qrId });
+    }
+
+    // 4c. App Settings (GET / POST /api/settings/:key)
+    if (method === "GET" && pathname.startsWith("/api/settings/")) {
+      const key = decodeURIComponent(pathname.slice("/api/settings/".length));
+      const doc = await AppSettings.findOne({ key }).lean();
+      return sendJson(res, 200, doc ? doc.value : {});
+    }
+
+    if (method === "POST" && pathname.startsWith("/api/settings/")) {
+      const key = decodeURIComponent(pathname.slice("/api/settings/".length));
+      const value = await parseBody(req);
+      await AppSettings.updateOne({ key }, { $set: { key, value } }, { upsert: true });
+      return sendJson(res, 200, { success: true, key, value });
     }
 
     // 5. Event QR Upload (POST /api/event-qr/:eventId)
@@ -268,15 +349,46 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 201, { success: true });
     }
 
-    // 12. Clear Payments (POST /api/payments/clear)
-    if (method === "POST" && pathname === "/api/payments/clear") {
+    // 12. Clear Records (POST /api/payments/clear, /api/records/clear, /api/registrations/clear)
+    if (method === "POST" && (pathname === "/api/payments/clear" || pathname === "/api/records/clear" || pathname === "/api/registrations/clear")) {
       const { username, password, confirmed } = await parseBody(req);
       if (!verifyAdminCredentials(username, password)) {
         return sendJson(res, 401, { error: "Invalid admin credentials" });
       }
       if (confirmed !== true) {
-        return sendJson(res, 400, { error: "Explicit confirmation is required before clearing payment records." });
+        return sendJson(res, 400, { error: "Explicit confirmation is required before clearing records." });
       }
+
+      if (pathname === "/api/records/clear") {
+        const regCount = await Registration.countDocuments();
+        const payCount = await Payment.countDocuments();
+        await Promise.all([
+          Registration.deleteMany({}),
+          Payment.deleteMany({})
+        ]);
+        return sendJson(res, 200, {
+          success: true,
+          message: "All registration and payment records cleared successfully.",
+          clearedRegistrations: regCount,
+          clearedPayments: payCount,
+          clearedCount: regCount + payCount,
+          remainingCount: 0,
+          backupFile: "mongodb-cleared"
+        });
+      }
+
+      if (pathname === "/api/registrations/clear") {
+        const countBefore = await Registration.countDocuments();
+        await Registration.deleteMany({});
+        return sendJson(res, 200, {
+          success: true,
+          message: "All registration records cleared successfully.",
+          clearedCount: countBefore,
+          remainingCount: 0,
+          backupFile: "mongodb-cleared"
+        });
+      }
+
       const countBefore = await Payment.countDocuments();
       await Payment.deleteMany({});
       return sendJson(res, 200, {

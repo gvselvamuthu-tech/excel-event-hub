@@ -17,6 +17,8 @@ const mongoose = require("mongoose");
 const Event = require("./models/Event");
 const Registration = require("./models/Registration");
 const Payment = require("./models/Payment");
+const PaymentQr = require("./models/PaymentQr");
+const AppSettings = require("./models/AppSettings");
 const { generateExcelBuffer } = require("./lib/excel-export");
 const mongoUri = process.env.MONGODB_URI;
 
@@ -302,29 +304,60 @@ const server = http.createServer(async (request, response) => {
         return;
       }
       sendJson(response, 200, { verified: true });
-    } else if (request.method === "POST" && url.pathname === "/api/payments/clear") {
+    } else if (request.method === "POST" && (url.pathname === "/api/payments/clear" || url.pathname === "/api/records/clear" || url.pathname === "/api/registrations/clear")) {
       const { username, password, confirmed } = await readJson(request, 8192);
       if (!verifyAdminCredentials(username, password)) {
         sendJson(response, 401, { error: "Invalid admin credentials" });
         return;
       }
       if (confirmed !== true) {
-        sendJson(response, 400, { error: "Explicit confirmation is required before clearing payment records." });
+        sendJson(response, 400, { error: "Explicit confirmation is required before clearing records." });
         return;
       }
       try {
-        const countBefore = await Payment.countDocuments();
-        await Payment.deleteMany({});
-        sendJson(response, 200, {
-          success: true,
-          message: "All payment records cleared successfully.",
-          clearedCount: countBefore,
-          remainingCount: 0,
-          backupFile: "mongodb-cleared"
-        });
+        const isCombinedClear = url.pathname === "/api/records/clear";
+        const isRegistrationsOnly = url.pathname === "/api/registrations/clear";
+
+        if (isCombinedClear) {
+          const regCount = await Registration.countDocuments();
+          const payCount = await Payment.countDocuments();
+          await Promise.all([
+            Registration.deleteMany({}),
+            Payment.deleteMany({})
+          ]);
+          sendJson(response, 200, {
+            success: true,
+            message: "All registration and payment records cleared successfully.",
+            clearedRegistrations: regCount,
+            clearedPayments: payCount,
+            clearedCount: regCount + payCount,
+            remainingCount: 0,
+            backupFile: "mongodb-cleared"
+          });
+        } else if (isRegistrationsOnly) {
+          const countBefore = await Registration.countDocuments();
+          await Registration.deleteMany({});
+          sendJson(response, 200, {
+            success: true,
+            message: "All registration records cleared successfully.",
+            clearedCount: countBefore,
+            remainingCount: 0,
+            backupFile: "mongodb-cleared"
+          });
+        } else {
+          const countBefore = await Payment.countDocuments();
+          await Payment.deleteMany({});
+          sendJson(response, 200, {
+            success: true,
+            message: "All payment records cleared successfully.",
+            clearedCount: countBefore,
+            remainingCount: 0,
+            backupFile: "mongodb-cleared"
+          });
+        }
       } catch (error) {
-        console.error("Could not clear payment records:", error);
-        sendJson(response, 500, { error: error.message || "Payment records could not be cleared." });
+        console.error("Could not clear records:", error);
+        sendJson(response, 500, { error: error.message || "Records could not be cleared." });
       }
     } else if (request.method === "GET" && paymentQrMatch) {
       const eventId = decodeURIComponent(paymentQrMatch[1]);
@@ -332,7 +365,7 @@ const server = http.createServer(async (request, response) => {
         sendJson(response, 400, { error: "A valid event id is required to generate a payment QR." });
         return;
       }
-      const event = await Event.findOne({ id: eventId }, { id: 1, title: 1, registrationFee: 1 }).lean();
+      const event = await Event.findOne({ id: eventId }, { id: 1, title: 1, registrationFee: 1, qrCode: 1, assignedQrId: 1 }).lean();
       if (!event) {
         sendJson(response, 404, { error: "The selected event could not be found." });
         return;
@@ -340,6 +373,36 @@ const server = http.createServer(async (request, response) => {
       if (parseRegistrationFee(event.registrationFee) === null) {
         throw new Error(`Event "${event.id}" has an invalid registration fee; its payment QR cannot be generated.`);
       }
+
+      // Check if this event has an assigned named QR code or direct custom QR dataUrl
+      let customQrBuffer = null;
+      let customQrContentType = "image/png";
+
+      if (event.assignedQrId) {
+        const namedQr = await PaymentQr.findOne({ id: String(event.assignedQrId), active: true }).lean();
+        if (namedQr && namedQr.dataUrl) {
+          const match = /^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/.exec(String(namedQr.dataUrl));
+          if (match) {
+            customQrContentType = `image/${match[1]}`;
+            customQrBuffer = Buffer.from(match[2], "base64");
+          }
+        }
+      }
+
+      if (!customQrBuffer && event.qrCode && event.qrCode.startsWith("data:image/")) {
+        const match = /^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/.exec(String(event.qrCode));
+        if (match) {
+          customQrContentType = `image/${match[1]}`;
+          customQrBuffer = Buffer.from(match[2], "base64");
+        }
+      }
+
+      if (customQrBuffer) {
+        response.writeHead(200, { "Content-Type": customQrContentType, "Cache-Control": "no-store" });
+        response.end(customQrBuffer);
+        return;
+      }
+
       const paymentUri = buildEventUpiPaymentLink(event);
       const qrImage = await QRCode.toBuffer(paymentUri, {
         type: "png",
@@ -349,6 +412,45 @@ const server = http.createServer(async (request, response) => {
       });
       response.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "no-store" });
       response.end(qrImage);
+    } else if (request.method === "GET" && url.pathname === "/api/payment-qrs") {
+      const qrs = await PaymentQr.find({}, { _id: 0 }).sort({ createdAt: 1 }).lean();
+      sendJson(response, 200, qrs);
+    } else if (request.method === "POST" && url.pathname === "/api/payment-qrs") {
+      const payload = await readJson(request, 7 * 1024 * 1024);
+      if (!payload.name || !String(payload.name).trim()) {
+        sendJson(response, 400, { error: "QR name is required." });
+        return;
+      }
+      if (!payload.dataUrl || !payload.dataUrl.startsWith("data:image/")) {
+        sendJson(response, 400, { error: "A valid QR image (PNG, JPEG, WebP) is required." });
+        return;
+      }
+      const qrId = payload.id && String(payload.id).trim() ? String(payload.id).trim() : `qr-${Date.now()}`;
+      const record = {
+        id: qrId,
+        name: String(payload.name).trim(),
+        provider: String(payload.provider || "UPI").trim(),
+        dataUrl: payload.dataUrl,
+        active: payload.active !== false,
+        isDefault: Boolean(payload.isDefault)
+      };
+      await PaymentQr.updateOne({ id: qrId }, { $set: record }, { upsert: true });
+      sendJson(response, 200, { success: true, qr: record });
+    } else if (request.method === "DELETE" && url.pathname.startsWith("/api/payment-qrs/")) {
+      const qrId = decodeURIComponent(url.pathname.slice("/api/payment-qrs/".length));
+      await PaymentQr.deleteOne({ id: qrId });
+      // Clear assignedQrId on events referencing this deleted QR so they safely fall back to standard UPI QR
+      await Event.updateMany({ assignedQrId: qrId }, { $unset: { assignedQrId: 1 } });
+      sendJson(response, 200, { success: true, deletedId: qrId });
+    } else if (request.method === "GET" && url.pathname.startsWith("/api/settings/")) {
+      const key = decodeURIComponent(url.pathname.slice("/api/settings/".length));
+      const doc = await AppSettings.findOne({ key }).lean();
+      sendJson(response, 200, doc ? doc.value : {});
+    } else if (request.method === "POST" && url.pathname.startsWith("/api/settings/")) {
+      const key = decodeURIComponent(url.pathname.slice("/api/settings/".length));
+      const value = await readJson(request, 5 * 1024 * 1024);
+      await AppSettings.updateOne({ key }, { $set: { key, value } }, { upsert: true });
+      sendJson(response, 200, { success: true, key, value });
     } else if (request.method === "GET" && url.pathname === "/api/events") {
       sendJson(response, 200, await readEvents());
     } else if (request.method === "PUT" && url.pathname === "/api/events") {

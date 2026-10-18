@@ -137,6 +137,29 @@ window.EVENT_DATA = {
       prize: "Sample: ₹6,000 + Trophy",
       prizes: ["₹6,000 + Trophy", "Best Quiz Team Award"],
       status: "Open"
+    },
+    {
+      id: "EEC/IT/2026-27/AEP/ACTNO.8.",
+      title: "SEMINAR",
+      category: "Technical",
+      description: "Interactive technical seminar and symposium session exploring emerging technologies and industry best practices.",
+      shortDescription: "Interactive technical seminar and symposium session exploring emerging technologies.",
+      fullDescription: "Join us for an enriching technical seminar featuring comprehensive keynote sessions, expert-guided technological discussions, interactive Q&A, and networking opportunities for students.",
+      date: "28-OCT-2026",
+      time: "09:30 AM",
+      venue: "APJ Hall, Main Block",
+      registrationFee: "₹250",
+      teamSize: "Individual",
+      maxParticipants: 100,
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=900&q=82&utm_source=excel-event-hub&utm_medium=referral",
+      rules: [
+        "Sample rule 1: Arrive 15 minutes before session begins.",
+        "Sample rule 2: Bring valid student ID card.",
+        "Sample rule 3: Seminar kit and participation certificate will be provided."
+      ],
+      prize: "Certificate of Participation",
+      prizes: ["Certificate of Participation"],
+      status: "Open"
     }
   ],
   nonTechnical: [
