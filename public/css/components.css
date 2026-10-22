@@ -734,7 +734,7 @@ body::after {
 .cursor-pop i:nth-of-type(2) { --angle: 142deg; animation-delay: 35ms; }
 .cursor-pop i:nth-of-type(3) { --angle: 268deg; animation-delay: 65ms; }
 
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .cursor-trail { display: none; }
 }
 
