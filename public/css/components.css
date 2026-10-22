@@ -877,6 +877,295 @@ html.home-is-entering .home-hero .stat-grid { animation-delay: 530ms; }
 .feature-box h3 { color: #f4fbff; font-family: "Orbitron", sans-serif; font-size: 0.95rem; }
 .feature-box p { color: var(--text-soft); }
 
+/* NEXUS26 Hackathon Section */
+.home-nexus-section {
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+}
+
+.nexus-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(8, 28, 58, 0.95), rgba(12, 42, 82, 0.92));
+  border: 1px solid rgba(50, 150, 255, 0.35);
+  box-shadow: 0 16px 40px rgba(4, 18, 38, 0.45), 0 0 30px rgba(49, 125, 246, 0.15);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.nexus-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(50, 230, 255, 0.8), rgba(49, 125, 246, 0.8), transparent);
+}
+
+.nexus-card::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  bottom: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(49, 125, 246, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.nexus-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(50, 180, 255, 0.55);
+  box-shadow: 0 20px 48px rgba(4, 18, 38, 0.5), 0 0 45px rgba(49, 125, 246, 0.25);
+}
+
+.nexus-card__left {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.nexus-card__icon-wrapper {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(20, 60, 120, 0.65), rgba(10, 30, 65, 0.85));
+  border: 1px solid rgba(80, 180, 255, 0.4);
+  color: #38bdf8;
+  box-shadow: 0 8px 24px rgba(6, 25, 52, 0.35), inset 0 0 16px rgba(56, 189, 248, 0.15);
+  transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.nexus-card:hover .nexus-card__icon-wrapper {
+  transform: scale(1.05);
+  border-color: rgba(125, 211, 252, 0.7);
+  color: #7dd3fc;
+}
+
+.nexus-card__icon {
+  width: 36px;
+  height: 36px;
+}
+
+.nexus-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.nexus-card__badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.nexus-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 6px;
+}
+
+.nexus-fee {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.nexus-card__title {
+  margin: 0.15rem 0 0.35rem;
+  font-family: "Orbitron", sans-serif;
+  font-size: clamp(1.4rem, 2.5vw, 1.95rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.nexus-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.nexus-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 500;
+}
+
+.nexus-meta-icon {
+  width: 17px;
+  height: 17px;
+  color: #38bdf8;
+  flex-shrink: 0;
+}
+
+.nexus-meta-divider {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.75rem;
+}
+
+.nexus-meta-item--prize {
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.nexus-meta-item--prize .nexus-meta-icon {
+  color: #60a5fa;
+}
+
+.nexus-card__right {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.nexus-register-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.95rem 1.85rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  border: 1px solid rgba(147, 197, 253, 0.45);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, border-color 0.2s ease;
+}
+
+.nexus-register-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  border-color: rgba(191, 219, 254, 0.8);
+  box-shadow: 0 14px 32px rgba(37, 99, 235, 0.5);
+  color: #ffffff;
+}
+
+.nexus-register-btn:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+}
+
+.nexus-btn-arrow {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.nexus-register-btn:hover .nexus-btn-arrow {
+  transform: translateX(4px);
+}
+
+.nexus-fee-hint {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@media (max-width: 860px) {
+  .nexus-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.75rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .nexus-card__left {
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .nexus-card__right {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .nexus-register-btn {
+    width: 100%;
+    padding: 0.9rem 1.4rem;
+  }
+
+  .nexus-fee-hint {
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .nexus-card__left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .nexus-card__icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+  }
+
+  .nexus-card__icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .nexus-card__title {
+    font-size: 1.35rem;
+  }
+
+  .nexus-card__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .nexus-meta-divider {
+    display: none;
+  }
+}
+
 .home-cta-section { padding-bottom: 6rem; }
 .home-cta-section .callout { position: relative; overflow: hidden; min-height: 230px; border: 1px solid rgba(50, 230, 255, 0.3); background: linear-gradient(120deg, rgba(8, 44, 72, 0.9), rgba(24, 27, 78, 0.92)); box-shadow: 0 0 50px rgba(50, 230, 255, 0.11); }
 .home-cta-section .callout::after { position: absolute; right: -5rem; bottom: -11rem; width: 25rem; height: 25rem; content: ""; border: 1px solid rgba(50, 230, 255, 0.23); border-radius: 50%; box-shadow: 0 0 0 2rem rgba(50, 230, 255, 0.03), 0 0 0 4rem rgba(139, 92, 246, 0.03); }
